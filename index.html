@@ -444,6 +444,21 @@
     .vistazo .valor-anyo{font-size:19px;height:22px}
     .vista-resumen > h2:first-of-type{margin-top:22px}
   }
+  /* ---------- Estilo oscuro (fondo liso, recuadros azul noche, KPI con borde dorado) ---------- */
+  :root{--fondo:#0A0D12;--panel:#0D131F;--panel-2:#0D131F;--borde:#222D3D;--tenue:#7E8BA0}
+  body{background:var(--fondo);background-image:none}
+  .card::before,.kpi-principal::before{display:none !important}
+  .card,.mini,.item{background:var(--panel);border-color:var(--borde)}
+  .menu,.btn-menu,.hoja{background:#0F1624}
+  .kpi-principal,.vista-resumen .kpi-mitad{
+    background:linear-gradient(180deg,#1A1B19 0%,#12151A 55%,#0E131D 100%) !important;
+    border:1px solid #6A623A !important;
+    box-shadow:0 0 34px rgba(232,197,107,.10), inset 0 1px 0 rgba(255,231,160,.05);
+  }
+  @media (max-width:899px){ .vista-resumen .kpi-mitad{background:transparent !important;border:0 !important;box-shadow:none !important} }
+  .kpi-benef{color:#F8DA64 !important;text-shadow:0 0 24px rgba(248,218,100,.32) !important}
+  .kpi-benef.neg{color:var(--rojo) !important;text-shadow:none !important}
+  #splash{background:radial-gradient(circle at 50% 45%,#161B24 0%,var(--fondo) 70%)}
   .sync-caja{margin:14px 0 4px;padding:14px;border:1px solid var(--borde);border-radius:16px;background:var(--panel-2)}
   .sync-tit{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
   .sync-caja a{color:var(--oro)}
