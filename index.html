@@ -385,10 +385,12 @@
   .menu-envoltorio{position:relative;flex:none}
   .btn-menu{display:flex;align-items:center;justify-content:center;gap:8px;min-width:46px;min-height:44px;border:1px solid var(--borde);background:var(--panel);color:var(--texto);
     border-radius:14px;padding:10px 12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-menu{position:relative}
+  .btn-menu .punto{position:absolute;top:6px;right:6px}
   .btn-menu .punto:not(.pend):not(.mal){display:none}
   .hamburguesa{display:flex;flex-direction:column;gap:4px;width:18px}
   .hamburguesa i{display:block;height:2px;border-radius:2px;background:var(--oro)}
-  .menu{position:absolute;right:0;top:calc(100% + 8px);min-width:220px;padding:6px;z-index:40;
+  .menu{position:absolute;left:0;top:calc(100% + 8px);min-width:220px;padding:6px;z-index:40;
     background:var(--panel);border:1px solid var(--borde);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.55)}
   .menu button{width:100%;display:flex;align-items:center;gap:12px;border:0;background:transparent;color:var(--texto);
     font-family:inherit;font-size:16px;font-weight:500;padding:12px 14px;border-radius:12px;cursor:pointer;text-align:left}
@@ -410,26 +412,37 @@
   @keyframes late{50%{transform:scale(1.04)}}
   @keyframes carga{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 
+  .kpi-benef{color:#5FD068;text-shadow:0 0 22px rgba(95,208,104,.35)}
+  .kpi-benef.neg{color:var(--rojo);text-shadow:none}
+  .kpi-vend{color:#fff !important;text-shadow:0 0 18px rgba(255,255,255,.15) !important}
+
   /* Móvil: Resumen de un vistazo, hasta el gráfico de ventas por año */
   @media (max-width:899px){
     .app{padding:12px 12px 32px}
     .cab{gap:10px;margin-bottom:12px}
     .icono-img{width:44px;height:44px;border-radius:12px}
     h1{font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .cab p{font-size:12px}
-    .btn-menu{padding:9px 11px;font-size:13px}
-    .kpi-principal{padding:14px 4px !important;min-height:0 !important;margin-bottom:8px}
-    .kpi-mitad{padding:2px 8px !important}
-    .kpi-mitad .cifra, .kpi-mitad .v{margin-top:4px !important}
-    .rejilla-2{gap:8px}
-    .vista-resumen .mini{padding:9px 12px;border-radius:14px}
-    .vista-resumen .mini .etq{font-size:12px}
-    .vista-resumen .mini .v{font-size:19px;margin-top:2px}
-    .vista-resumen .mini .s{font-size:10.5px;margin-top:1px}
-    .vista-resumen .card{padding:12px 14px}
-    .vista-resumen h2{margin:14px 0 8px;font-size:12px}
-    .vista-resumen .graf{height:118px;margin-top:6px}
-    .vista-resumen .valor-anyo{font-size:17px;height:20px}
+    .cab p{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .btn-menu{min-width:44px;min-height:44px;padding:0 11px}
+    .vistazo{display:flex;flex-direction:column}
+    .vistazo > *{flex:none}
+    .vistazo .kpi-principal{padding:18px 4px !important;min-height:0 !important;margin-bottom:10px}
+    .vistazo .kpi-mitad{padding:2px 8px !important}
+    .vistazo .kpi-mitad .etq{font-size:15px}
+    .vistazo .kpi-mitad .cifra, .vistazo .kpi-mitad .v{font-size:clamp(28px,9.5vw,40px) !important;margin-top:6px !important}
+    .vistazo .kpi-mitad .etq[style]{font-size:13px !important}
+    .vistazo .rejilla-2{gap:10px;margin-bottom:0}
+    .vistazo .mini{padding:12px 14px;border-radius:16px}
+    .vistazo .mini .etq{font-size:13.5px}
+    .vistazo .mini .v{font-size:23px;margin-top:3px}
+    .vistazo .mini .s{font-size:12px;margin-top:2px}
+    .vistazo > .card:not(.card-anyos){margin:10px 0 0}
+    .vistazo h2{margin:14px 0 8px;font-size:12px}
+    .vistazo .card-anyos{flex:1 1 auto;min-height:150px;margin-bottom:0;padding:12px 14px;display:flex;flex-direction:column}
+    .vistazo .card-anyos .graf{flex:1 1 auto;height:auto;min-height:0;margin-top:4px}
+    .vistazo .card-anyos .vacio{margin:auto 0 !important}
+    .vistazo .valor-anyo{font-size:19px;height:22px}
+    .vista-resumen > h2:first-of-type{margin-top:22px}
   }
   .sync-caja{margin:14px 0 4px;padding:14px;border:1px solid var(--borde);border-radius:16px;background:var(--panel-2)}
   .sync-tit{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
@@ -449,17 +462,17 @@
 
 <div class="app">
   <header class="cab">
+    <div class="menu-envoltorio">
+      <button id="btn-menu" class="btn-menu" onclick="alternarMenu(event)" aria-label="Menú" aria-expanded="false">
+        <span class="hamburguesa" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span id="punto-guardado" class="punto"></span>
+      </button>
+      <div id="menu" class="menu oculto" role="menu"></div>
+    </div>
     <img class="icono-img" src="icon.svg" alt="Aceites Carrasco-Gento" width="56" height="56">
     <div class="cab-txt">
       <h1>Aceites Carrasco-Gento</h1>
       <p>Inventario, pedidos y ganancias</p>
-    </div>
-    <div class="menu-envoltorio">
-      <button id="btn-menu" class="btn-menu" onclick="alternarMenu(event)" aria-label="Menú" aria-expanded="false">
-        <span id="punto-guardado" class="punto"></span>
-        <span class="hamburguesa" aria-hidden="true"><i></i><i></i><i></i></span>
-      </button>
-      <div id="menu" class="menu oculto" role="menu"></div>
     </div>
   </header>
 
@@ -809,16 +822,55 @@ function calc(){
 
 function vistaResumen(){
   const s = calc();
+  const movil = window.innerWidth < 900;
   return `
+  ${movil ? `
+  <div class="vistazo">
   <div class="kpi-principal">
     <section class="card kpi-mitad" style="text-align:center">
       <div class="etq" style="font-size:16px">Beneficios Totales</div>
-      <div class="v ${s.beneficios>=0?"oro":"rojo"}" style="font-size:40px;font-weight:700;line-height:1.1">${eur(s.beneficios)}</div>
+      <div class="v kpi-benef ${s.beneficios>=0?"":"neg"}" style="font-size:40px;font-weight:700;line-height:1.1">${eur(s.beneficios)}</div>
       <div class="etq" style="font-size:13px;margin-top:4px">${s.vend} <span style="color:var(--tenue)">garrafas vendidas</span></div>
     </section>
     <section class="card kpi-mitad" style="text-align:center">
       <div class="etq" style="font-size:16px">Vendido</div>
-      <div class="cifra" style="font-size:40px;margin-top:4px">${Math.floor(s.vend/s.gpc)}${s.vend%s.gpc?` +${s.vend%s.gpc}`:""}</div>
+      <div class="cifra kpi-vend" style="font-size:40px;margin-top:4px">${Math.floor(s.vend/s.gpc)}${s.vend%s.gpc?` +${s.vend%s.gpc}`:""}</div>
+      <div class="etq" style="font-size:13px;font-weight:600;margin-top:4px">cajas${s.vend%s.gpc?" + garrafas":""}</div>
+    </section>
+  </div>
+
+  <div class="rejilla-2">
+    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado).length} pedidos pagados</div></div>
+    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div><div class="s">${estado.pedidos.filter(p=>!p.pagado).length} pedidos sin pagar</div></div>
+    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div><div class="s">${estado.gastos.length} apunte${estado.gastos.length===1?"":"s"}</div></div>
+    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div><div class="s">${Math.max(0,s.rest)} garrafas</div></div>
+    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&(p.metodo||"efectivo")==="efectivo").length} pedidos</div></div>
+    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&p.metodo==="bizum").length} pedidos</div></div>
+  </div>
+
+  ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
+
+    <h2>Ventas por año</h2>
+    <section class="card card-anyos">${graficoAnyos()}</section>
+  </div>
+  <h2>Progreso de ventas</h2>
+  <section class="card">${barraProgreso(s)}</section>
+  <h2>Cajas vendidas y restantes</h2>
+  <section class="card">${graficoStock(s)}</section>
+  <h2>Últimos pedidos</h2>
+  <div class="lista">
+  ${estado.pedidos.length===0 ? `<div class="vacio">Todavía no hay pedidos. Apunta el primero en Pedidos.</div>` : estado.pedidos.slice(0,3).map(itemPedidoResumen).join("")}
+  </div>
+  ` : `
+  <div class="kpi-principal">
+    <section class="card kpi-mitad" style="text-align:center">
+      <div class="etq" style="font-size:16px">Beneficios Totales</div>
+      <div class="v kpi-benef ${s.beneficios>=0?"":"neg"}" style="font-size:40px;font-weight:700;line-height:1.1">${eur(s.beneficios)}</div>
+      <div class="etq" style="font-size:13px;margin-top:4px">${s.vend} <span style="color:var(--tenue)">garrafas vendidas</span></div>
+    </section>
+    <section class="card kpi-mitad" style="text-align:center">
+      <div class="etq" style="font-size:16px">Vendido</div>
+      <div class="cifra kpi-vend" style="font-size:40px;margin-top:4px">${Math.floor(s.vend/s.gpc)}${s.vend%s.gpc?` +${s.vend%s.gpc}`:""}</div>
       <div class="etq" style="font-size:13px;font-weight:600;margin-top:4px">cajas${s.vend%s.gpc?" + garrafas":""}</div>
     </section>
   </div>
@@ -857,6 +909,7 @@ function vistaResumen(){
       </div>
     </div>
   </div>
+  `}
   `;
 }
 
@@ -1506,7 +1559,25 @@ function render(){
     : vistaAjustes();
 
   if(marca){ const el = document.getElementById(marca); if(el){ el.focus(); try{ el.setSelectionRange(el.value.length,el.value.length); }catch(e){} } }
+  ajustarVistazo();
 }
+
+// Resumen en móvil: lo de arriba + el gráfico de años ocupan justo la pantalla
+function ajustarVistazo(){
+  const v = document.querySelector(".vistazo");
+  if(!v) return;
+  v.style.height = "";
+  const arriba = v.getBoundingClientRect().top + window.scrollY;
+  const disponible = Math.floor(window.innerHeight - arriba - 14);
+  v.style.height = disponible + "px";
+  if(v.scrollHeight > disponible + 1) v.style.height = v.scrollHeight + "px";
+}
+let anchoPrevio = window.innerWidth;
+window.addEventListener("resize", () => {
+  const w = window.innerWidth;
+  if((w < 900) !== (anchoPrevio < 900)){ anchoPrevio = w; if(tab === "resumen") render(); return; }
+  if(w !== anchoPrevio){ anchoPrevio = w; ajustarVistazo(); }
+});
 
 function elementoPantallaCompleta(){ return null; }
 
