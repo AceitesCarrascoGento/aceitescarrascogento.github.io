@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aceites Carrasco-Gento">
+<meta name="theme-color" content="#08090D">
+<title>Aceites Carrasco-Gento</title>
+<meta name="description" content="Inventario, pedidos, clientes, gastos y ganancias del aceite.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fondo:#08090D;
+    --panel:#111A33;
+    --panel-2:#16203F;
+    --borde:#27335C;
+    --oro:#E8C56B;
+    --oro-2:#C9973C;
+    --verde:#5BD6AE;
+    --cian:#4FD3E8;
+    --rojo:#F4796B;
+    --texto:#EAF0FF;
+    --tenue:#8590B3;
+    --radio:20px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;background:var(--fondo);color:var(--texto);
+    font-family:'Outfit',system-ui,sans-serif;
+    background-image:linear-gradient(#141c33 1px,transparent 1px),linear-gradient(90deg,#141c33 1px,transparent 1px);
+    background-size:44px 44px;
+  }
+  .app{position:relative;max-width:640px;margin:0 auto;padding:16px 14px 40px}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+  /* Cabecera */
+  .cab{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .icono{
+    width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:26px;
+    background:linear-gradient(150deg,#F2D98A,#C9973C);
+    box-shadow:0 0 26px rgba(232,197,107,.35);
+  }
+  h1{margin:0;font-size:24px;font-weight:700;color:var(--oro);letter-spacing:-.02em}
+  .cab p{margin:2px 0 0;font-size:13px;color:var(--tenue)}
+
+  /* Botones */
+  .fila{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .btn-oro{
+    flex:1;min-width:150px;border:0;cursor:pointer;border-radius:16px;padding:14px 18px;
+    font-family:inherit;font-size:16px;font-weight:600;color:#241A05;
+    background:linear-gradient(150deg,#F4DE9B,#D2A448);
+    box-shadow:0 0 24px rgba(232,197,107,.3);
+  }
+  .btn-oro:active{transform:scale(.99)}
+  .btn-linea{
+    border:1px solid var(--borde);background:var(--panel);color:var(--texto);
+    border-radius:16px;padding:14px 16px;font-family:inherit;font-size:15px;cursor:pointer;
+  }
+
+  /* Pestañas */
+  nav{
+    display:flex;gap:4px;padding:5px;margin-bottom:14px;overflow-x:auto;
+    background:var(--panel);border:1px solid var(--borde);border-radius:18px;
+  }
+  nav button{
+    flex:1;white-space:nowrap;border:0;background:transparent;color:var(--tenue);
+    font-family:inherit;font-size:15px;font-weight:500;padding:10px 14px;border-radius:14px;cursor:pointer;
+  }
+  nav button.on{
+    color:#241A05;font-weight:600;
+    background:linear-gradient(150deg,#F4DE9B,#D2A448);
+    box-shadow:0 0 18px rgba(232,197,107,.35);
+  }
+
+  /* Tarjetas */
+  .card{
+    background:var(--panel);border:1px solid var(--borde);border-radius:var(--radio);
+    padding:18px;margin-bottom:12px;position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;top:0;left:12%;right:12%;height:1px;
+    background:linear-gradient(90deg,transparent,var(--oro),transparent);opacity:.6;
+  }
+  .etq{font-size:13px;color:var(--tenue)}
+  .cifra{font-size:44px;font-weight:700;color:var(--oro);line-height:1.05;text-shadow:0 0 22px rgba(232,197,107,.35)}
+  .cifra small{font-size:22px}
+  .kpi-principal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .kpi-mitad{margin-bottom:0}
+  .rejilla-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mini{background:var(--panel-2);border:1px solid var(--borde);border-radius:16px;padding:14px}
+  .lista .mini{margin-bottom:8px}
+  .lista .mini:last-child{margin-bottom:0}
+  .mini .v{font-size:22px;font-weight:700;margin-top:4px}
+  .mini .s{font-size:11px;color:var(--tenue);margin-top:2px}
+  .subnav{display:flex;gap:6px;padding:4px;margin-bottom:12px;background:var(--panel-2);border:1px solid var(--borde);border-radius:14px}
+  .subnav button{flex:1;border:0;background:transparent;color:var(--tenue);font-family:inherit;font-size:14px;font-weight:600;padding:9px 12px;border-radius:11px;cursor:pointer}
+  .subnav button.on-pen{background:rgba(244,121,107,.18);color:var(--rojo);box-shadow:0 0 14px rgba(244,121,107,.18)}
+  .subnav button.on-pag{background:rgba(91,214,174,.18);color:var(--verde);box-shadow:0 0 14px rgba(91,214,174,.18)}
+  .oro{color:var(--oro)} .verde{color:var(--verde)} .rojo{color:var(--rojo)}
+
+  /* Gráfico */
+  .graf{display:flex;align-items:flex-end;gap:6px;height:150px;margin-top:14px}
+  .graf .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+  .graf .barra-caja{flex:1;width:100%;display:flex;align-items:flex-end}
+  .graf .b{width:100%;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#F4DE9B,#C9973C);transition:height .5s}
+  .graf .b.act{background:linear-gradient(180deg,#7DE8C6,#3FB795)}
+  .graf .b.cero{background:#1E2847}
+  .graf .m{font-size:12px;color:var(--tenue)}
+  .graf .col{max-width:110px}
+  .valor-anyo{font-size:22px;font-weight:700;color:var(--oro);font-family:'JetBrains Mono',monospace;line-height:1;height:26px;text-shadow:0 0 16px rgba(232,197,107,.35);white-space:nowrap}
+  .progreso{padding:6px 4px 2px}
+  .progreso-num{text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:38px;color:var(--oro);text-shadow:0 0 20px rgba(232,197,107,.3)}
+  .progreso-num span{font-size:.5em;color:var(--tenue);font-weight:600}
+  .barra-pct{margin-top:10px;height:14px;border-radius:999px;background:#0C1329;border:1px solid var(--borde);overflow:hidden}
+  .relleno-pct{height:100%;border-radius:999px;background:linear-gradient(90deg,#C9973C,#F4DE9B);box-shadow:0 0 12px rgba(232,197,107,.4);transition:width .5s}
+  .dona-envoltorio{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;padding:4px}
+  .tarta{width:160px;height:160px;border-radius:50%;flex:none;box-shadow:0 0 26px rgba(232,197,107,.22)}
+  .dona-leyenda{display:flex;flex-direction:column;gap:10px}
+  .leyenda-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--texto)}
+  .leyenda-item b{color:var(--oro);font-family:'JetBrains Mono',monospace}
+  .punto-leyenda{width:11px;height:11px;border-radius:3px;flex:none}
+  .año{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--borde);border-radius:999px;padding:5px 8px}
+  .año button{border:0;background:transparent;color:var(--oro);font-size:16px;cursor:pointer;padding:2px 8px}
+  .año span{font-size:15px;font-weight:600;color:var(--oro)}
+
+  /* Lista */
+  .item{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--panel-2);border:1px solid var(--borde);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+  .item .n{font-weight:600;font-size:15px}
+  .item .d{font-size:12px;color:var(--tenue);margin-top:2px}
+  .item .p{font-size:16px;font-weight:700;white-space:nowrap}
+  .chip{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid;cursor:pointer;font-family:inherit}
+  .chip.pag{color:var(--verde);border-color:rgba(91,214,174,.5);background:rgba(91,214,174,.1)}
+  .chip.pen{color:var(--rojo);border-color:rgba(244,121,107,.5);background:rgba(244,121,107,.1)}
+  .borrar{border:0;background:transparent;color:var(--tenue);font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit}
+  .vacio{border:1px dashed var(--borde);border-radius:18px;padding:28px 14px;text-align:center;color:var(--tenue);font-size:14px}
+
+  /* Formulario */
+  label{display:block;font-size:12px;color:var(--tenue);margin:14px 0 6px}
+  input[type=text],input[type=number],input[type=date]{
+    width:100%;background:#0C1329;border:1px solid var(--borde);border-radius:14px;
+    padding:13px 14px;color:var(--texto);font-family:inherit;font-size:16px;outline:none;
+  }
+  input:focus{border-color:var(--oro)}
+  input[type=date]{color-scheme:dark}
+  .contador{display:flex;align-items:center;background:#0C1329;border:1px solid var(--borde);border-radius:14px}
+  .contador button{width:46px;border:0;background:transparent;color:var(--oro);font-size:22px;cursor:pointer;padding:10px 0}
+  .contador input{border:0;background:transparent;text-align:center;font-weight:700;font-size:18px}
+  .toggle{display:flex;background:#0C1329;border:1px solid var(--borde);border-radius:14px;padding:4px;gap:4px}
+  .toggle button{flex:1;border:0;background:transparent;color:var(--tenue);font-family:inherit;font-size:14px;font-weight:600;padding:9px;border-radius:11px;cursor:pointer}
+  .toggle button.pag-on{background:rgba(91,214,174,.18);color:var(--verde);box-shadow:0 0 14px rgba(91,214,174,.2)}
+  .toggle button.pen-on{background:rgba(244,121,107,.18);color:var(--rojo);box-shadow:0 0 14px rgba(244,121,107,.2)}
+  .toggle button.met-efectivo{background:rgba(91,214,174,.18);color:var(--verde);box-shadow:0 0 14px rgba(91,214,174,.2)}
+  .toggle button.met-bizum{background:rgba(79,211,232,.18);color:var(--cian);box-shadow:0 0 14px rgba(79,211,232,.2)}
+  .chip.met-efectivo{color:var(--verde);border-color:rgba(91,214,174,.5);background:rgba(91,214,174,.1);margin-left:6px}
+  .chip.met-bizum{color:var(--cian);border-color:rgba(79,211,232,.5);background:rgba(79,211,232,.1);margin-left:6px}
+  .precio{
+    display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:14px 16px;
+    border:1px solid rgba(232,197,107,.45);border-radius:16px;background:rgba(232,197,107,.06);
+  }
+  .precio .v{font-size:30px;font-weight:700;color:var(--oro);text-shadow:0 0 18px rgba(232,197,107,.35)}
+  .aviso{font-size:12px;color:var(--rojo);margin-top:8px}
+  .aviso.oro{color:var(--oro)}
+  h2{margin:20px 0 10px;font-size:13px;color:var(--tenue);font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+  .oculto{display:none !important}
+
+  /* Copia de seguridad */
+  .punto{width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 8px var(--verde);flex:0 0 auto}
+  .punto.pend{background:var(--oro);box-shadow:0 0 8px var(--oro)}
+  .punto.mal{background:var(--rojo);box-shadow:0 0 8px var(--rojo)}
+  .estado-caja{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--borde);border-radius:16px;padding:14px 16px;margin-top:4px}
+  .btn-datos{
+    border:1px solid var(--borde);background:var(--panel);color:var(--texto);
+    border-radius:16px;padding:12px 16px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:8px;
+  }
+  .capa{
+    position:fixed;inset:0;background:rgba(4,6,12,.72);backdrop-filter:blur(4px);
+    display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:0;
+  }
+  .hoja{
+    width:100%;max-width:640px;background:var(--panel);border:1px solid var(--borde);
+    border-radius:24px 24px 0 0;padding:22px 18px calc(26px + env(safe-area-inset-bottom));
+    max-height:88vh;overflow:auto;
+  }
+  .hoja h3{margin:0;font-size:22px;font-weight:700}
+  .hoja .cerrar{border:0;background:transparent;color:var(--tenue);font-size:24px;cursor:pointer;line-height:1}
+  .opcion{
+    width:100%;display:flex;align-items:center;gap:12px;margin-top:10px;cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--borde);border-radius:16px;
+    padding:15px 16px;color:var(--texto);font-family:inherit;font-size:16px;font-weight:600;text-align:left;
+  }
+  .opcion.principal{
+    background:linear-gradient(150deg,#F4DE9B,#D2A448);color:#241A05;border-color:transparent;
+    box-shadow:0 0 22px rgba(232,197,107,.28);
+  }
+  .opcion .ic{font-size:18px;width:22px;text-align:center}
+  .cerrar-abajo{justify-content:center;margin-top:16px;color:var(--tenue)}
+  .nota{font-size:13px;color:var(--tenue);line-height:1.5;margin:18px 0 0;padding-top:16px;border-top:1px solid var(--borde)}
+  textarea{
+    width:100%;min-height:120px;margin-top:10px;background:#0C1329;border:1px solid var(--borde);
+    border-radius:14px;padding:12px;color:var(--texto);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;resize:vertical;
+  }
+  textarea:focus{border-color:var(--oro)}
+  .ok{font-size:13px;color:var(--verde);margin-top:10px}
+  .ko{font-size:13px;color:var(--rojo);margin-top:10px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:899px){
+    .kpi-principal{
+      background:var(--panel);border:1px solid var(--borde);border-radius:var(--radio);
+      padding:26px 4px;gap:0;position:relative;overflow:hidden;
+    }
+    .kpi-principal::before{
+      content:"";position:absolute;top:0;left:12%;right:12%;height:1px;
+      background:linear-gradient(90deg,transparent,var(--oro),transparent);opacity:.6;
+    }
+    .kpi-mitad{
+      background:transparent !important;border:0 !important;box-shadow:none !important;
+      margin-bottom:0 !important;padding:8px 10px !important;
+      display:flex;flex-direction:column;justify-content:center;align-items:center;
+    }
+    .kpi-mitad::before{display:none !important}
+    .kpi-mitad .cifra{font-size:clamp(22px,7.5vw,34px) !important;margin-top:8px;display:block}
+    .kpi-mitad .v{font-size:clamp(22px,7.5vw,34px) !important;margin-top:8px}
+    .kpi-mitad .etq{font-size:11px}
+    .kpi-principal{min-height:130px}
+  }
+
+  /* ---------- Versión ORDENADOR (el móvil se queda igual) ---------- */
+  @media (min-width:900px){
+    .app{max-width:1160px;padding:30px 34px 70px}
+    .cab{margin-bottom:22px}
+    .icono{width:64px;height:64px;font-size:30px}
+    h1{font-size:30px}
+    .cab p{font-size:15px}
+
+    /* Barra superior: pestañas y botón Guardado en la misma línea */
+    .fila{position:absolute;top:34px;right:34px;margin:0;width:auto}
+    nav{max-width:560px}
+
+    /* Tarjeta grande de cabecera (stock + ganado) */
+    .vista-resumen > .card:first-child{padding:26px 30px}
+    .vista-resumen > .card:first-child .cifra{font-size:56px}
+
+    /* KPIs en fila de 3 */
+    .vista-resumen .rejilla-2{grid-template-columns:repeat(3,1fr);gap:14px}
+    .mini{padding:16px 18px}
+    .mini .v{font-size:26px}
+
+    /* Gráfico y últimos pedidos, lado a lado */
+    .grid-inferior{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start;margin-top:28px}
+    .grid-inferior > section.card{margin-top:0 !important}
+    .grid-inferior h2{margin-top:0}
+    .graf{height:220px}
+
+    /* Listas de pedidos y clientes en dos columnas */
+    .vista-pedidos .lista,
+    .vista-clientes .lista{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .vista-pedidos .lista .item,
+    .vista-clientes .lista .item{margin-bottom:0}
+
+    /* Formulario de nuevo pedido más contenido, no a todo lo ancho */
+    .vista-pedidos > .btn-oro{max-width:340px}
+    .vista-pedidos > .card{max-width:640px}
+    .vista-gastos > .btn-oro{max-width:340px}
+    .vista-gastos > .card{max-width:640px}
+
+    /* Ajustes en dos columnas, misma altura */
+    .vista-ajustes{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+    .vista-ajustes .card{margin-bottom:0;display:flex;flex-direction:column;justify-content:center}
+    .vista-ajustes .kpi-ajustes{grid-column:1 / -1}
+
+    .hoja{border-radius:24px;max-width:520px;margin-bottom:6vh}
+    .capa{align-items:center}
+  }
+
+  @media (min-width:1200px){
+    .grid-inferior .graf .col{max-width:130px}
+  }
+
+  /* ---------- Modo "de un vistazo" al entrar en pantalla completa (solo Resumen, solo ordenador) ----------
+     La app pasa a ocupar el 100% del alto de pantalla. El bloque de gráficos (Ventas por
+     año + Progreso) se reparte todo el espacio que sobra; "Últimos pedidos" se hace más
+     pequeño para dejar sitio. */
+  @media (min-width:900px){
+    :fullscreen .app, :-webkit-full-screen .app{
+      height:100vh;display:flex;flex-direction:column;overflow:hidden;
+      padding-top:10px;padding-bottom:10px;
+    }
+    :fullscreen .cab, :-webkit-full-screen .cab{margin-bottom:8px;flex:none}
+    :fullscreen .icono, :-webkit-full-screen .icono{width:32px;height:32px}
+    :fullscreen .icono svg, :-webkit-full-screen .icono svg{width:22px;height:22px}
+    :fullscreen h1, :-webkit-full-screen h1{font-size:17px}
+    :fullscreen .cab p, :-webkit-full-screen .cab p{font-size:10px}
+    :fullscreen .fila, :-webkit-full-screen .fila{top:10px;right:10px}
+
+    /* Barra de pestañas más grande */
+    :fullscreen nav, :-webkit-full-screen nav{margin-bottom:10px;padding:5px;flex:none}
+    :fullscreen nav button, :-webkit-full-screen nav button{padding:11px 16px;font-size:15px}
+
+    :fullscreen .vista-resumen, :-webkit-full-screen .vista-resumen{
+      flex:1;display:flex;flex-direction:column;min-height:0;
+    }
+
+    /* KPIs más grandes */
+    :fullscreen .vista-resumen .kpi-principal, :-webkit-full-screen .vista-resumen .kpi-principal{margin-bottom:8px;flex:none}
+    :fullscreen .vista-resumen .kpi-mitad, :-webkit-full-screen .vista-resumen .kpi-mitad{padding:14px 16px}
+    :fullscreen .vista-resumen .kpi-mitad .etq, :-webkit-full-screen .vista-resumen .kpi-mitad .etq{font-size:15px}
+    :fullscreen .vista-resumen .kpi-mitad .cifra, :-webkit-full-screen .vista-resumen .kpi-mitad .cifra{font-size:36px !important}
+    :fullscreen .vista-resumen .kpi-mitad .v, :-webkit-full-screen .vista-resumen .kpi-mitad .v{font-size:36px !important}
+
+    :fullscreen .vista-resumen .rejilla-2, :-webkit-full-screen .vista-resumen .rejilla-2{gap:8px;margin-bottom:8px;flex:none}
+    :fullscreen .vista-resumen .rejilla-2 .mini, :-webkit-full-screen .vista-resumen .rejilla-2 .mini{padding:12px 14px}
+    :fullscreen .vista-resumen .rejilla-2 .mini .etq, :-webkit-full-screen .vista-resumen .rejilla-2 .mini .etq{font-size:12px}
+    :fullscreen .vista-resumen .rejilla-2 .mini .v, :-webkit-full-screen .vista-resumen .rejilla-2 .mini .v{font-size:23px !important;margin-top:3px}
+    :fullscreen .vista-resumen .rejilla-2 .mini .s, :-webkit-full-screen .vista-resumen .rejilla-2 .mini .s{font-size:11px}
+
+    /* El bloque de gráficos ocupa todo el espacio restante */
+    :fullscreen .vista-resumen .grid-inferior, :-webkit-full-screen .vista-resumen .grid-inferior{
+      margin-top:0;gap:16px;flex:1;min-height:0;
+    }
+    :fullscreen .vista-resumen .grid-inferior > div:first-child, :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child{
+      display:flex;flex-direction:column;min-height:0;height:100%;
+    }
+    :fullscreen .vista-resumen h2, :-webkit-full-screen .vista-resumen h2{margin:0 0 6px;font-size:11px;flex:none}
+    :fullscreen .vista-resumen .grid-inferior > div:first-child > h2:not(:first-child), :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > h2:not(:first-child){margin-top:14px}
+
+    :fullscreen .vista-resumen .grid-inferior > div:first-child > section.card,
+    :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > section.card{
+      flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 16px;margin-bottom:0;
+    }
+    :fullscreen .vista-resumen .grid-inferior > div:first-child > section.card:first-of-type,
+    :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > section.card:first-of-type{flex:1.35}
+    :fullscreen .vista-resumen .grid-inferior > div:first-child > section.card:last-of-type,
+    :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > section.card:last-of-type{flex:0.65}
+
+    /* Ventas por año: las columnas se estiran a lo alto que quede, y quedan centradas (no en la esquina) */
+    :fullscreen .vista-resumen .graf, :-webkit-full-screen .vista-resumen .graf{
+      flex:1;min-height:0;height:auto;gap:10px;justify-content:center;margin-top:0;
+    }
+    :fullscreen .vista-resumen .graf .col, :-webkit-full-screen .vista-resumen .graf .col{max-width:52px}
+    :fullscreen .vista-resumen .valor-anyo, :-webkit-full-screen .vista-resumen .valor-anyo{font-size:16px;height:20px}
+
+    /* Progreso de ventas: centrado en el espacio que le toca */
+    :fullscreen .vista-resumen .progreso, :-webkit-full-screen .vista-resumen .progreso{
+      flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:0 4px;
+    }
+    :fullscreen .vista-resumen .progreso-num, :-webkit-full-screen .vista-resumen .progreso-num{font-size:30px}
+    :fullscreen .vista-resumen .progreso-num span, :-webkit-full-screen .vista-resumen .progreso-num span{margin-left:4px}
+    :fullscreen .vista-resumen .barra-pct, :-webkit-full-screen .vista-resumen .barra-pct{height:10px;margin-top:8px}
+    :fullscreen .vista-resumen .progreso .etq, :-webkit-full-screen .vista-resumen .progreso .etq{font-size:12px;margin-top:8px !important}
+
+    /* Últimos pedidos: cuadrados más pequeños */
+    :fullscreen .vista-resumen .lista .mini, :-webkit-full-screen .vista-resumen .lista .mini{
+      padding:8px 10px;margin-bottom:12px;
+      display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;
+    }
+    :fullscreen .vista-resumen .lista .mini > div:first-child, :-webkit-full-screen .vista-resumen .lista .mini > div:first-child{
+      order:1;flex:0 0 84px;text-align:left;font-size:15px !important;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    :fullscreen .vista-resumen .lista .mini .cifra, :-webkit-full-screen .vista-resumen .lista .mini .cifra{
+      order:2;flex:1;text-align:center;font-size:15px !important;margin-top:0 !important;
+    }
+    :fullscreen .vista-resumen .lista .mini .v, :-webkit-full-screen .vista-resumen .lista .mini .v{
+      order:3;flex:0 0 70px;text-align:right;font-size:19px !important;margin-top:0 !important;
+    }
+
+    :fullscreen .vista-resumen .dona-envoltorio, :-webkit-full-screen .vista-resumen .dona-envoltorio{gap:16px;padding:0}
+    :fullscreen .vista-resumen .tarta, :-webkit-full-screen .vista-resumen .tarta{width:120px;height:120px}
+    :fullscreen .vista-resumen .leyenda-item, :-webkit-full-screen .vista-resumen .leyenda-item{font-size:13px}
+  }
+  .icono-img{width:56px;height:56px;border-radius:16px;box-shadow:0 0 26px rgba(232,197,107,.35);flex:none}
+  .sync-caja{margin:14px 0 4px;padding:14px;border:1px solid var(--borde);border-radius:16px;background:var(--panel-2)}
+  .sync-tit{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .sync-caja a{color:var(--oro)}
+  .mini{border:1px solid var(--borde);background:var(--panel);color:var(--texto);border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;cursor:pointer}
+  .mini.oro{border:0;color:#241A05;font-weight:600;background:linear-gradient(150deg,#F4DE9B,#D2A448)}
+  .mini.rojo{color:var(--rojo)}
+  .ayuda-ios{font-size:13px;color:var(--tenue);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="cab">
+    <img class="icono-img" src="icon.svg" alt="Aceites Carrasco-Gento" width="56" height="56">
+    <div>
+      <h1>Aceites Carrasco-Gento</h1>
+      <p>Inventario, pedidos y ganancias</p>
+    </div>
+  </header>
+
+  <div class="fila">
+    <button id="btn-pantalla" class="btn-datos" onclick="alternarPantallaCompleta()" title="Pantalla completa" aria-label="Pantalla completa">
+      <span id="ic-pantalla">⤢</span>
+    </button>
+    <button id="btn-instalar" class="btn-datos oculto" onclick="instalarApp()">⬇ Instalar app</button>
+    <button id="btn-guardado" class="btn-datos" style="margin-left:auto" onclick="abrirDatos()">
+      <span id="punto-guardado" class="punto"></span><span id="txt-guardado">Guardado</span>
+    </button>
+  </div>
+
+  <nav id="nav"></nav>
+  <main id="vista"></main>
+</div>
+
+<div id="modal" class="capa oculto" onclick="if(event.target===this) cerrarDatos()">
+  <div class="hoja">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h3>Guardado</h3>
+      <button class="cerrar" aria-label="Cerrar" onclick="cerrarDatos()">&times;</button>
+    </div>
+
+    <div class="estado-caja">
+      <span id="punto-modal" class="punto"></span>
+      <div>
+        <div id="estado-modal" style="font-size:15px;font-weight:600">Todo guardado</div>
+        <div id="estado-sub" class="etq" style="font-size:12px"></div>
+      </div>
+    </div>
+
+    <div id="zona-sync"></div>
+
+    <button class="opcion principal" onclick="exportar()"><span class="ic">↓</span> Exportar copia (descargar)</button>
+    <button class="opcion" onclick="verTexto()"><span class="ic">↧</span> Exportar como texto (copiar)</button>
+    <button class="opcion" onclick="document.getElementById('archivo').click()"><span class="ic verde">↑</span> Importar desde archivo</button>
+    <button class="opcion" onclick="verPegar()"><span class="ic verde">↑</span> Importar pegando texto</button>
+    <input id="archivo" type="file" accept="application/json,.json,.txt" class="oculto" onchange="importarArchivo(this)">
+
+    <div id="zona-texto" class="oculto">
+      <textarea id="texto-salida" readonly onclick="this.select()"></textarea>
+      <button class="opcion" onclick="copiarTexto()"><span class="ic">⧉</span> Copiar al portapapeles</button>
+    </div>
+
+    <div id="zona-pegar" class="oculto">
+      <textarea id="texto-pegar" placeholder="Pega aquí el contenido del archivo de copia"></textarea>
+      <button class="opcion" onclick="importarTexto()"><span class="ic verde">↑</span> Restaurar desde el texto pegado</button>
+    </div>
+
+    <button class="opcion cerrar-abajo" onclick="cerrarDatos()">Cerrar</button>
+
+    <p class="nota">Los datos se guardan solos en este dispositivo (y en la nube si has vinculado GitHub). La copia guarda pedidos, clientes, stock y ajustes en un archivo. Guárdalo en el móvil o en la nube: si cambias de teléfono o se borran los datos, lo importas aquí y vuelve todo.</p>
+    <div id="msg-datos"></div>
+  </div>
+</div>
+
+<div id="modal-cobro" class="capa oculto" onclick="if(event.target===this) cerrarCobro()">
+  <div class="hoja" style="max-width:400px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h3>¿Cómo ha pagado?</h3>
+      <button class="cerrar" aria-label="Cerrar" onclick="cerrarCobro()">&times;</button>
+    </div>
+    <p id="cobro-texto" class="nota" style="margin-top:8px"></p>
+    <button class="opcion" onclick="confirmarCobro('efectivo')"><span class="ic verde">●</span> Efectivo</button>
+    <button class="opcion" onclick="confirmarCobro('bizum')"><span class="ic" style="color:var(--cian)">●</span> Bizum</button>
+    <button class="opcion cerrar-abajo" onclick="cerrarCobro()">Cancelar</button>
+  </div>
+</div>
+
+<div id="modal-confirmar" class="capa oculto" onclick="if(event.target===this) cancelarConfirmacion()">
+  <div class="hoja" style="max-width:400px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h3 id="confirmar-titulo">¿Seguro?</h3>
+      <button class="cerrar" aria-label="Cerrar" onclick="cancelarConfirmacion()">&times;</button>
+    </div>
+    <p id="confirmar-texto" class="nota" style="margin-top:8px"></p>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="opcion" style="flex:1;justify-content:center" onclick="cancelarConfirmacion()">Cancelar</button>
+      <button class="opcion principal" id="btn-confirmar-si" style="flex:1;justify-content:center" onclick="confirmarSi()">Borrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY = "aceite:datos";
+const DEF = { garrafasPorCaja:3, litrosPorGarrafa:5, precioGarrafa:30, cajasIniciales:0 };
+let estado = { config:{...DEF}, pedidos:[], entradas:[], gastos:[], actualizado:0 };
+let tab = "resumen";
+let nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().slice(0,10), pagado:false, metodo:"efectivo", error:"" };
+let nuevasCajas = 0;
+let formAbierto = false;
+let formGastoAbierto = false;
+let editandoPedido = null;
+let buscarPedido = "";
+let subTabPedidos = "pendientes";
+let buscarCliente = "";
+let nuevoGasto = { concepto:"", importe:0, fecha:new Date().toISOString().slice(0,10), error:"" };
+
+const eur = n => new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR",maximumFractionDigits:2}).format(n||0);
+const fechaCorta = iso => { const [a,m,d]=iso.split("-"); return `${d}/${m}/${a.slice(2)}`; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- Sistema de guardado ----------
+   1) Este dispositivo (almacenamiento del navegador): siempre, al instante y sin conexión.
+   2) Nube (un Gist privado de tu cuenta de GitHub): si vinculas la app, los datos se
+      sincronizan entre todos tus dispositivos. Gana siempre la versión más reciente. */
+
+const SYNC_KEY = "aceite:sync";        // { token, gistId, login }
+const GIST_FILE = "aceites-carrasco-gento.json";
+let sync = leerSync();
+let guardadoEstado = "ok";      // ok | guardando | error
+let guardadoHora = null;
+let colaGuardado = null;
+let ultimoErrorNube = "";
+let nubeOk = false;
+
+function leerSync(){ try{ return JSON.parse(localStorage.getItem(SYNC_KEY)) || null; }catch(e){ return null; } }
+function escribirSync(){ try{ sync ? localStorage.setItem(SYNC_KEY, JSON.stringify(sync)) : localStorage.removeItem(SYNC_KEY); }catch(e){} }
+
+function leerLocal(){
+  try{ const t = window.localStorage.getItem(KEY); return t ? JSON.parse(t) : null; }
+  catch(e){ return null; }
+}
+function escribirLocal(){
+  try{ window.localStorage.setItem(KEY, JSON.stringify(estado)); return true; }
+  catch(e){ return false; }
+}
+
+async function gh(ruta, opciones = {}, token = sync && sync.token){
+  const r = await fetch("https://api.github.com" + ruta, {
+    ...opciones, cache: "no-store",
+    headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "Content-Type": "application/json", "X-GitHub-Api-Version": "2022-11-28" }
+  });
+  if(!r.ok){
+    const e = new Error(r.status === 401 ? "La clave de GitHub no es válida o ha caducado." : r.status === 403 || r.status === 404 ? "La clave no tiene permiso para Gists." : "GitHub ha respondido " + r.status);
+    e.status = r.status; throw e;
+  }
+  return r.status === 204 ? null : r.json();
+}
+
+async function leerNube(){
+  if(!sync || !sync.gistId || !navigator.onLine) return null;
+  try{
+    const g = await gh("/gists/" + sync.gistId);
+    const f = g.files && g.files[GIST_FILE];
+    if(!f) return null;
+    const txt = f.truncated ? await (await fetch(f.raw_url, { cache: "no-store" })).text() : f.content;
+    nubeOk = true; ultimoErrorNube = "";
+    return txt ? JSON.parse(txt) : null;
+  }catch(e){ nubeOk = false; ultimoErrorNube = e.message; return null; }
+}
+async function escribirNube(keepalive){
+  if(!sync || !sync.gistId) return false;
+  if(!navigator.onLine){ nubeOk = false; ultimoErrorNube = "Sin conexión: se subirá al volver."; return false; }
+  try{
+    await gh("/gists/" + sync.gistId, { method: "PATCH", keepalive: !!keepalive, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(estado) } } }) });
+    nubeOk = true; ultimoErrorNube = ""; return true;
+  }catch(e){ nubeOk = false; ultimoErrorNube = e.message; return false; }
+}
+
+function aplicarDatos(d){
+  if(!d) return;
+  estado.config = {...DEF, ...(d.config||{})};
+  estado.pedidos = Array.isArray(d.pedidos) ? d.pedidos : [];
+  estado.entradas = Array.isArray(d.entradas) ? d.entradas : [];
+  estado.gastos = Array.isArray(d.gastos) ? d.gastos : [];
+  estado.actualizado = d.actualizado || 0;
+}
+
+// Cuál de dos copias es más nueva: por fecha de cambio; si no hay, la que tenga más datos.
+function puntos(d){
+  if(!d) return -1;
+  if(d.actualizado) return d.actualizado;
+  return (d.pedidos||[]).length + (d.gastos||[]).length + (d.entradas||[]).length > 0 ? 1 : 0;
+}
+
+async function cargar(){
+  const local = leerLocal();
+  if(local){ aplicarDatos(local); guardadoHora = new Date(); }
+  render(); pintarEstado();
+  await sincronizar();
+}
+
+// Trae la nube; si es más nueva la aplica, si la local es más nueva la sube.
+async function sincronizar(){
+  if(!sync || !sync.gistId) return;
+  const nube = await leerNube();
+  if(!nubeOk){ pintarEstado(); return; }
+  const pn = puntos(nube), pl = puntos(estado);
+  if(pn > pl){
+    aplicarDatos(nube); escribirLocal(); render();
+  } else if(pl > pn){
+    await escribirNube();
+  }
+  guardadoHora = new Date();
+  pintarEstado();
+}
+
+function guardar(){
+  estado.actualizado = Date.now();
+  guardadoEstado = "guardando";
+  pintarEstado();
+  const okLocal = escribirLocal();
+  clearTimeout(colaGuardado);
+  if(!sync){
+    guardadoEstado = okLocal ? "ok" : "error";
+    if(okLocal) guardadoHora = new Date();
+    pintarEstado();
+    return;
+  }
+  colaGuardado = setTimeout(async ()=>{
+    colaGuardado = null;
+    const okNube = await escribirNube();
+    guardadoEstado = okNube ? "ok" : okLocal ? "local" : "error";
+    if(okNube || okLocal) guardadoHora = new Date();
+    pintarEstado();
+  }, 700);
+}
+
+function pintarEstado(){
+  const hora = guardadoHora ? guardadoHora.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}) : null;
+  const textos = {
+    ok: [sync ? "Sincronizado" : "Guardado", sync ? "Todo guardado y sincronizado" : "Todo guardado en este dispositivo", hora ? "Último guardado a las " + hora : "Sin cambios todavía"],
+    guardando: ["Guardando…", "Guardando cambios", "Un momento"],
+    local: ["Pendiente de subir", "Guardado en este dispositivo", ultimoErrorNube || "Se subirá a la nube en cuanto haya conexión"],
+    error: ["Sin guardar", "No se ha podido guardar", "Exporta una copia para no perder nada"]
+  };
+  let est = guardadoEstado;
+  if(est === "ok" && sync && !nubeOk && ultimoErrorNube) est = "local";
+  const clase = est==="ok" ? "" : (est==="guardando" || est==="local") ? "pend" : "mal";
+  const [btn, tit, sub] = textos[est];
+  const el = id => document.getElementById(id);
+  if(el("txt-guardado")) el("txt-guardado").textContent = btn;
+  if(el("punto-guardado")) el("punto-guardado").className = "punto " + clase;
+  if(el("punto-modal")) el("punto-modal").className = "punto " + clase;
+  if(el("estado-modal")) el("estado-modal").textContent = tit;
+  if(el("estado-sub")) el("estado-sub").textContent = sub;
+  pintarSync();
+}
+
+/* ---------- Vincular con GitHub (sincronización entre dispositivos) ---------- */
+
+function pintarSync(){
+  const z = document.getElementById("zona-sync");
+  if(!z) return;
+  if(sync){
+    z.innerHTML = `
+      <div class="sync-caja">
+        <div class="sync-tit"><span class="ic verde">☁</span> Sincronización activa</div>
+        <div class="etq" style="font-size:12px;margin-top:4px">Cuenta de GitHub: <b>${esc(sync.login||"")}</b>. Los cambios se guardan en la nube y aparecen en tus otros dispositivos.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button class="mini" onclick="sincronizarAhora()">↻ Sincronizar ahora</button>
+          <button class="mini" onclick="copiarEnlaceVincular()">🔗 Vincular otro dispositivo</button>
+          <button class="mini rojo" onclick="desvincular()">Desvincular</button>
+        </div>
+      </div>`;
+  } else {
+    z.innerHTML = `
+      <div class="sync-caja">
+        <div class="sync-tit"><span class="ic">☁</span> Sincronizar entre dispositivos</div>
+        <div class="etq" style="font-size:12px;margin-top:4px;line-height:1.5">Ahora mismo los datos solo están en este dispositivo. Para tenerlos en el móvil, la tablet y el ordenador a la vez, vincula tu cuenta de GitHub:<br>
+          1. <a href="https://github.com/settings/tokens/new?scopes=gist&description=Aceites%20Carrasco-Gento" target="_blank" rel="noopener">Crea una clave aquí</a> (marca solo <b>gist</b> y en caducidad elige <b>No expiration</b>).<br>
+          2. Pega la clave abajo y pulsa Vincular.</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input id="token-gh" type="password" autocomplete="off" placeholder="ghp_…" style="flex:1;min-width:0">
+          <button class="mini oro" onclick="vincular()">Vincular</button>
+        </div>
+      </div>`;
+  }
+}
+
+async function vincular(tokenDado){
+  const token = (tokenDado || (document.getElementById("token-gh")||{}).value || "").trim();
+  if(!token) return msg("Pega primero la clave de GitHub.", false);
+  msg("Conectando con GitHub…", true);
+  try{
+    const yo = await gh("/user", {}, token);
+    let gistId = null;
+    for(let p = 1; p <= 10 && !gistId; p++){
+      const lista = await gh(`/gists?per_page=100&page=${p}`, {}, token);
+      const g = lista.find(g => g.files && g.files[GIST_FILE]);
+      if(g) gistId = g.id;
+      if(lista.length < 100) break;
+    }
+    const nuevoGist = !gistId;
+    if(nuevoGist){
+      const g = await gh("/gists", { method: "POST", body: JSON.stringify({ description: "Datos de la app Aceites Carrasco-Gento (no borrar)", public: false, files: { [GIST_FILE]: { content: JSON.stringify(estado) } } }) }, token);
+      gistId = g.id;
+    }
+    sync = { token, gistId, login: yo.login };
+    escribirSync();
+    await sincronizar();
+    guardadoEstado = "ok"; pintarEstado();
+    msg(nuevoGist ? "Vinculado. Tus datos ya están en la nube." : "Vinculado. Datos sincronizados con la nube.", true);
+  }catch(e){
+    msg("No se ha podido vincular: " + e.message, false);
+  }
+}
+
+async function sincronizarAhora(){ msg("Sincronizando…", true); await sincronizar(); msg(nubeOk ? "Sincronizado." : "No se ha podido: " + ultimoErrorNube, nubeOk); }
+
+function desvincular(){
+  pedirConfirmacion("Este dispositivo dejará de sincronizar. Los datos se quedan aquí y en la nube. ¿Seguir?", () => {
+    sync = null; escribirSync(); nubeOk = false; ultimoErrorNube = ""; pintarEstado();
+    msg("Desvinculado.", true);
+  }, "Desvincular");
+}
+
+async function copiarEnlaceVincular(){
+  const enlace = location.origin + location.pathname + "#vincular=" + encodeURIComponent(sync.token);
+  try{ await navigator.clipboard.writeText(enlace); msg("Enlace copiado. Ábrelo en el otro dispositivo y quedará vinculado. No lo compartas con nadie: da acceso a tus datos.", true); }
+  catch(e){
+    document.getElementById("zona-pegar").classList.add("oculto");
+    document.getElementById("zona-texto").classList.remove("oculto");
+    const t = document.getElementById("texto-salida"); t.value = enlace; t.select();
+    msg("Copia este enlace y ábrelo en el otro dispositivo. No lo compartas con nadie.", true);
+  }
+}
+
+// Si se abre con un enlace de vinculación (#vincular=...), se vincula solo
+async function vincularDesdeEnlace(){
+  const m = location.hash.match(/vincular=([^&]+)/);
+  if(!m) return false;
+  const token = decodeURIComponent(m[1]);
+  history.replaceState(null, "", location.pathname + location.search);
+  abrirDatos();
+  await vincular(token);
+  return true;
+}
+
+// Al volver a la app, trae lo último de la nube. Al salir, guarda.
+window.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "hidden"){ escribirLocal(); if(colaGuardado){ clearTimeout(colaGuardado); colaGuardado = null; escribirNube(true); } }
+  else sincronizar();
+});
+window.addEventListener("online", ()=>{ sincronizar(); });
+setInterval(()=>{ if(document.visibilityState === "visible" && !colaGuardado) sincronizar(); }, 60000);
+
+function calc(){
+  const c = estado.config, gpc = c.garrafasPorCaja||3;
+  const alta = c.cajasIniciales*gpc + estado.entradas.reduce((s,e)=>s+e.cajas*gpc,0);
+  const vend = estado.pedidos.reduce((s,p)=>s+p.cajas*gpc+p.garrafas,0);
+  const rest = alta - vend;
+  const ingresos = estado.pedidos.reduce((s,p)=>s+p.total,0);
+  const pagados = estado.pedidos.filter(p=>p.pagado);
+  const cobrado = pagados.reduce((s,p)=>s+p.total,0);
+  const efectivo = pagados.filter(p=>(p.metodo||"efectivo")==="efectivo").reduce((s,p)=>s+p.total,0);
+  const bizum = pagados.filter(p=>p.metodo==="bizum").reduce((s,p)=>s+p.total,0);
+  const gastos = estado.gastos.reduce((s,g)=>s+g.importe,0);
+  return { gpc, alta, vend, rest, efectivo, bizum, gastos,
+    cajasRest: Math.floor(Math.max(0,rest)/gpc), sueltasRest: rest>0? rest%gpc : 0,
+    litros: Math.max(0,rest)*c.litrosPorGarrafa,
+    ingresos, cobrado, pendiente: ingresos-cobrado, beneficios: ingresos-gastos };
+}
+
+/* ---------- Vistas ---------- */
+
+function vistaResumen(){
+  const s = calc();
+  return `
+  <div class="kpi-principal">
+    <section class="card kpi-mitad" style="text-align:center">
+      <div class="etq" style="font-size:16px">Beneficios Totales</div>
+      <div class="v ${s.beneficios>=0?"oro":"rojo"}" style="font-size:40px;font-weight:700;line-height:1.1">${eur(s.beneficios)}</div>
+      <div class="etq" style="font-size:13px;margin-top:4px">${s.vend} <span style="color:var(--tenue)">garrafas vendidas</span></div>
+    </section>
+    <section class="card kpi-mitad" style="text-align:center">
+      <div class="etq" style="font-size:16px">Vendido</div>
+      <div class="cifra" style="font-size:40px;margin-top:4px">${Math.floor(s.vend/s.gpc)}${s.vend%s.gpc?` +${s.vend%s.gpc}`:""}</div>
+      <div class="etq" style="font-size:13px;font-weight:600;margin-top:4px">cajas${s.vend%s.gpc?" + garrafas":""}</div>
+    </section>
+  </div>
+
+  <div class="rejilla-2">
+    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado).length} pedidos pagados</div></div>
+    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div><div class="s">${estado.pedidos.filter(p=>!p.pagado).length} pedidos sin pagar</div></div>
+    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div><div class="s">${estado.gastos.length} apunte${estado.gastos.length===1?"":"s"}</div></div>
+    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div><div class="s">${Math.max(0,s.rest)} garrafas</div></div>
+    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&(p.metodo||"efectivo")==="efectivo").length} pedidos</div></div>
+    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&p.metodo==="bizum").length} pedidos</div></div>
+  </div>
+
+  ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
+
+  <div class="grid-inferior">
+    <div>
+      <h2>Ventas por año</h2>
+      <section class="card">
+        ${graficoAnyos()}
+      </section>
+      <h2>Progreso de ventas</h2>
+      <section class="card">
+        ${barraProgreso(s)}
+      </section>
+    </div>
+    <div>
+      <h2>Cajas vendidas y restantes</h2>
+      <section class="card">
+        ${graficoStock(s)}
+      </section>
+      <h2>Últimos pedidos</h2>
+      <div class="lista">
+      ${estado.pedidos.length===0 ? `<div class="vacio">Todavía no hay pedidos. Apunta el primero en la pestaña Pedidos.</div>`
+        : estado.pedidos.slice(0, elementoPantallaCompleta() ? 4 : 3).map(itemPedidoResumen).join("")}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function barraProgreso(s){
+  const pct = s.alta > 0 ? Math.min(100, Math.round((s.vend / s.alta) * 100)) : 0;
+  return `
+    <div class="progreso">
+      <div class="progreso-num">${pct}<span>%</span></div>
+      <div class="barra-pct"><div class="relleno-pct" style="width:${pct}%"></div></div>
+      <div class="etq" style="margin-top:8px;text-align:center">
+        ${s.vend} de ${s.alta} garrafas vendidas · quedan ${Math.max(0,s.alta - s.vend)} para el 100%
+      </div>
+    </div>`;
+}
+
+function graficoStock(s){
+  const total = s.alta;
+  const vendidas = Math.min(s.vend, total);
+  const pctVendidas = total > 0 ? Math.round((vendidas / total) * 100) : 0;
+  const pctQuedan = 100 - pctVendidas;
+  const cajasVendidas = Math.floor(vendidas / s.gpc);
+  const cajasQuedan = s.cajasRest;
+  if(total <= 0){
+    return `<div class="vacio">Da de alta stock en Ajustes para ver este gráfico.</div>`;
+  }
+  return `
+    <div class="dona-envoltorio">
+      <div class="tarta" style="background:conic-gradient(var(--verde) 0 ${pctVendidas}%, var(--rojo) ${pctVendidas}% 100%)"></div>
+      <div class="dona-leyenda">
+        <div class="leyenda-item" style="color:var(--tenue)"><span class="punto-leyenda" style="background:var(--verde)"></span><b style="color:var(--verde)">${pctVendidas}%</b>&nbsp;Vendidas · ${cajasVendidas} cajas</div>
+        <div class="leyenda-item" style="color:var(--tenue)"><span class="punto-leyenda" style="background:var(--rojo)"></span><b style="color:var(--rojo)">${pctQuedan}%</b>&nbsp;Sin vender · ${cajasQuedan} cajas</div>
+      </div>
+    </div>`;
+}
+
+function graficoAnyos(){
+  if(!estado.pedidos.length) return `<div class="vacio" style="margin-top:14px">Cuando apuntes pedidos verás aquí lo que vendes cada año.</div>`;
+  const suma = {};
+  estado.pedidos.forEach(p => { const a = +p.fecha.slice(0,4); suma[a] = (suma[a]||0) + p.total; });
+  const actual = new Date().getFullYear();
+  const anyos = Object.keys(suma).map(Number);
+  const desde = Math.min(...anyos), hasta = Math.max(actual, ...anyos);
+  const lista = [];
+  for(let a = desde; a <= hasta; a++) lista.push({ a, v: suma[a] || 0 });
+  const tope = Math.max(...lista.map(x=>x.v), 1);
+  return `<div class="graf">${lista.map(x=>`
+    <div class="col">
+      <div class="valor-anyo">${x.v ? eur(x.v).replace(/\s?€/,"") + "€" : ""}</div>
+      <div class="barra-caja">
+        <div class="b ${x.v===0?"cero":(x.a===actual?"act":"")}" style="height:${x.v===0?4:Math.max(6,(x.v/tope)*100)}%"></div>
+      </div>
+      <div class="m">${x.a}</div>
+    </div>`).join("")}</div>`;
+}
+
+function itemPedido(p){
+  const partes = [];
+  if(p.cajas>0) partes.push(`${p.cajas} caja${p.cajas===1?"":"s"}`);
+  if(p.garrafas>0) partes.push(`${p.garrafas} garrafa${p.garrafas===1?"":"s"}`);
+  const detalle = partes.join(" + ") || "0 garrafas";
+  return `
+  <div class="item">
+    <div style="min-width:0">
+      <div class="n">${esc(p.cliente)}</div>
+      <div class="cifra" style="font-size:20px;margin-top:2px">${detalle}</div>
+      <div style="margin-top:6px">
+        <button class="chip ${p.pagado?"pag":"pen"}" onclick="togglePagado('${p.id}')">${p.pagado?"PAGADO":"PENDIENTE"}</button>
+        ${p.pagado?`<button class="chip ${(p.metodo||"efectivo")==="bizum"?"met-bizum":"met-efectivo"}" onclick="cambiarMetodo('${p.id}')">${(p.metodo||"efectivo")==="bizum"?"BIZUM":"EFECTIVO"}</button>`:""}
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="p ${p.pagado?"oro":"rojo"}">${eur(p.total)}</div>
+      <div style="margin-top:4px;display:flex;gap:10px;justify-content:flex-end">
+        <button class="borrar" onclick="editarPedido('${p.id}')">Editar</button>
+        <button class="borrar" onclick="borrarPedido('${p.id}')">Borrar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function itemPedidoResumen(p){
+  const partes = [];
+  if(p.cajas>0) partes.push(`${p.cajas} caja${p.cajas===1?"":"s"}`);
+  if(p.garrafas>0) partes.push(`${p.garrafas} garrafa${p.garrafas===1?"":"s"}`);
+  const detalle = partes.join(" + ") || "0 garrafas";
+  return `
+  <div class="mini" style="text-align:center">
+    <div style="font-weight:600;font-size:15px">${esc(p.cliente)}</div>
+    <div class="cifra" style="font-size:18px;margin-top:6px">${detalle}</div>
+    <div class="v ${p.pagado?"verde":"rojo"}" style="font-size:20px;margin-top:6px">${eur(p.total)}</div>
+  </div>`;
+}
+
+function vistaPedidos(){
+  const s = calc();
+  const tg = nuevo.cajas*s.gpc + nuevo.garrafas;
+  const total = tg*estado.config.precioGarrafa;
+  return `
+  <button class="btn-oro" style="width:100%;margin-bottom:12px" onclick="toggleForm()">
+    ${formAbierto ? "✕ Cerrar" : "+ Nuevo pedido"}
+  </button>
+
+  <section class="card ${formAbierto?"":"oculto"}">
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">${editandoPedido?"Editar pedido":"Nuevo pedido"}</div>
+
+    <label>Quién lo ha pedido</label>
+    <input type="text" id="f-cliente" placeholder="Nombre" value="${esc(nuevo.cliente)}" oninput="setCliente(this.value)">
+
+    <div class="rejilla-2" style="margin-top:6px">
+      <div>
+        <label>Cajas (${s.gpc} garrafas)</label>
+        <div class="contador">
+          <button onclick="setNum('cajas',nuevo.cajas-1)" aria-label="Quitar caja">−</button>
+          <input id="f-cajas" type="number" inputmode="numeric" min="0" value="${nuevo.cajas}" oninput="setNum('cajas',this.value)">
+          <button onclick="setNum('cajas',nuevo.cajas+1)" aria-label="Añadir caja">+</button>
+        </div>
+      </div>
+      <div>
+        <label>Garrafas sueltas</label>
+        <div class="contador">
+          <button onclick="setNum('garrafas',nuevo.garrafas-1)" aria-label="Quitar garrafa">−</button>
+          <input id="f-garrafas" type="number" inputmode="numeric" min="0" value="${nuevo.garrafas}" oninput="setNum('garrafas',this.value)">
+          <button onclick="setNum('garrafas',nuevo.garrafas+1)" aria-label="Añadir garrafa">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rejilla-2">
+      <div>
+        <label>Fecha</label>
+        <input id="f-fecha" type="date" value="${nuevo.fecha}" oninput="setFecha(this.value)">
+      </div>
+      <div>
+        <label>¿Ha pagado?</label>
+        <div class="toggle" id="toggle-pago">
+          <button class="${nuevo.pagado?"pag-on":""}" onclick="setPagado(true)">Pagado</button>
+          <button class="${!nuevo.pagado?"pen-on":""}" onclick="setPagado(false)">Pendiente</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="zona-metodo" class="${nuevo.pagado?"":"oculto"}">
+      <label>¿Cómo ha pagado?</label>
+      <div class="toggle" id="toggle-metodo">
+        <button class="${nuevo.metodo==="efectivo"?"met-efectivo":""}" onclick="setMetodo('efectivo')">Efectivo</button>
+        <button class="${nuevo.metodo==="bizum"?"met-bizum":""}" onclick="setMetodo('bizum')">Bizum</button>
+      </div>
+    </div>
+
+    <div class="precio">
+      <div>
+        <div class="etq">Precio</div>
+        <div id="precio-detalle" class="etq" style="font-size:12px">${tg} garrafa${tg===1?"":"s"} × ${estado.config.precioGarrafa}€</div>
+      </div>
+      <div id="precio-total" class="v mono">${eur(total)}</div>
+    </div>
+
+    <div id="zona-stock"></div>
+    <div id="zona-error">${nuevo.error?`<div class="aviso">${nuevo.error}</div>`:""}</div>
+
+    <button class="btn-oro" style="width:100%;margin-top:14px" onclick="registrar()">${editandoPedido?"Guardar cambios":"Guardar pedido"}</button>
+  </section>
+
+  <h2 style="margin-top:0">Registro · ${estado.pedidos.length} pedidos</h2>
+  <input id="buscar-pedido" type="text" placeholder="Buscar por nombre…" value="${esc(buscarPedido)}"
+    oninput="buscarPedido=this.value; render()" style="margin-bottom:10px">
+  ${registroPedidosFiltrado()}
+  `;
+}
+
+function registroPedidosFiltrado(){
+  const q = buscarPedido.trim().toLowerCase();
+  const filtrados = estado.pedidos.filter(p => p.cliente.toLowerCase().includes(q));
+  const orden = (a,b) => a.cliente.localeCompare(b.cliente,"es");
+  const pendientes = filtrados.filter(p=>!p.pagado).sort(orden);
+  const pagados = filtrados.filter(p=>p.pagado).sort(orden);
+
+  const nPend = estado.pedidos.filter(p=>!p.pagado).length;
+  const nPag = estado.pedidos.filter(p=>p.pagado).length;
+
+  const subnav = `
+    <div class="subnav">
+      <button class="${subTabPedidos==="pendientes"?"on-pen":""}" onclick="irSubPedidos('pendientes')">Pendientes · ${nPend}</button>
+      <button class="${subTabPedidos==="pagados"?"on-pag":""}" onclick="irSubPedidos('pagados')">Pagados · ${nPag}</button>
+    </div>`;
+
+  const lista = subTabPedidos==="pendientes" ? pendientes : pagados;
+  let cuerpo;
+  if(!estado.pedidos.length){
+    cuerpo = `<div class="vacio">Aquí se irán guardando todos los pedidos.</div>`;
+  } else if(!lista.length){
+    cuerpo = q
+      ? `<div class="vacio">Ningún pedido de "${esc(buscarPedido)}" en ${subTabPedidos}.</div>`
+      : `<div class="vacio">No hay pedidos ${subTabPedidos==="pendientes"?"pendientes de cobro":"pagados"}.</div>`;
+  } else {
+    cuerpo = `<div class="lista">${lista.map(itemPedido).join("")}</div>`;
+  }
+  return subnav + cuerpo;
+}
+
+function irSubPedidos(t){ subTabPedidos = t; render(); }
+
+function vistaClientes(){
+  const gpc = estado.config.garrafasPorCaja||3;
+  const m = new Map();
+  estado.pedidos.forEach(p=>{
+    const c = m.get(p.cliente) || {cliente:p.cliente,garrafas:0,total:0,pendiente:0,n:0};
+    c.garrafas += p.cajas*gpc+p.garrafas; c.total += p.total;
+    c.pendiente += p.pagado?0:p.total; c.n++;
+    m.set(p.cliente,c);
+  });
+  let lista = [...m.values()].sort((a,b)=>a.cliente.localeCompare(b.cliente,"es"));
+  if(!lista.length) return `<div class="vacio">Cuando apuntes pedidos, aquí verás cuánto se lleva cada uno y quién te debe dinero.</div>`;
+
+  const q = buscarCliente.trim().toLowerCase();
+  const buscador = `<input id="buscar-cliente" type="text" placeholder="Buscar por nombre…" value="${esc(buscarCliente)}"
+    oninput="buscarCliente=this.value; render()" style="margin-bottom:10px">`;
+  const filtrada = lista.filter(c => c.cliente.toLowerCase().includes(q));
+  if(!filtrada.length) return buscador + `<div class="vacio">Ningún cliente llamado "${esc(buscarCliente)}".</div>`;
+
+  return buscador + `<div class="lista">` + filtrada.map(c=>`
+    <div class="item">
+      <div>
+        <div class="n">${esc(c.cliente)}</div>
+        <div class="d">${c.garrafas} garrafas · ${c.n} pedido${c.n>1?"s":""}</div>
+        ${c.pendiente>0?`<span class="chip pen" style="margin-top:6px">DEBE ${eur(c.pendiente)}</span>`:`<span class="chip pag" style="margin-top:6px">AL DÍA</span>`}
+      </div>
+      <div class="p oro">${eur(c.total)}</div>
+    </div>`).join("") + `</div>`;
+}
+
+function itemGasto(g){
+  return `
+  <li class="item">
+    <div style="min-width:0">
+      <div class="n">${esc(g.concepto)}</div>
+      <div class="d">${fechaCorta(g.fecha)}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="p rojo">${eur(g.importe)}</div>
+      <button class="borrar" onclick="borrarGasto('${g.id}')">Borrar</button>
+    </div>
+  </li>`;
+}
+
+function vistaGastos(){
+  const ordenados = [...estado.gastos].sort((a,b)=> b.fecha.localeCompare(a.fecha) || (b.id>a.id?1:-1));
+  const total = estado.gastos.reduce((s,g)=>s+g.importe,0);
+  return `
+  <button class="btn-oro" style="width:100%;margin-bottom:12px" onclick="toggleFormGasto()">
+    ${formGastoAbierto ? "✕ Cerrar" : "+ Nuevo gasto"}
+  </button>
+
+  <section class="card ${formGastoAbierto?"":"oculto"}">
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Nuevo gasto</div>
+
+    <label>¿En qué te lo has gastado?</label>
+    <input id="g-concepto" type="text" placeholder="Ej. garrafas, transporte, etiquetas…" value="${esc(nuevoGasto.concepto)}" oninput="setConceptoGasto(this.value)">
+
+    <div class="rejilla-2">
+      <div>
+        <label>Importe</label>
+        <div style="position:relative">
+          <input id="g-importe" type="number" inputmode="decimal" min="0" step="0.01" value="${nuevoGasto.importe||""}" oninput="setImporteGasto(this.value)">
+          <span style="position:absolute;right:14px;top:13px;color:var(--tenue);font-size:14px">€</span>
+        </div>
+      </div>
+      <div>
+        <label>Fecha</label>
+        <input id="g-fecha" type="date" value="${nuevoGasto.fecha}" oninput="setFechaGasto(this.value)">
+      </div>
+    </div>
+
+    <div id="zona-error-gasto">${nuevoGasto.error?`<div class="aviso">${nuevoGasto.error}</div>`:""}</div>
+
+    <button class="btn-oro" style="width:100%;margin-top:14px" onclick="registrarGasto()">Guardar gasto</button>
+  </section>
+
+  <h2>Registro · ${estado.gastos.length} gasto${estado.gastos.length===1?"":"s"}${estado.gastos.length?` · ${eur(total)}`:""}</h2>
+  <ul class="lista" style="list-style:none;padding:0;margin:0">
+  ${estado.gastos.length===0 ? `<li class="vacio" style="list-style:none">Aquí se irán guardando los gastos del negocio.</li>`
+    : ordenados.map(itemGasto).join("")}
+  </ul>
+  `;
+}
+
+function setConceptoGasto(v){ nuevoGasto.concepto = v; if(nuevoGasto.error){ nuevoGasto.error=""; document.getElementById("zona-error-gasto").innerHTML = ""; } }
+function setImporteGasto(v){ nuevoGasto.importe = Math.max(0, Number(v)||0); }
+function setFechaGasto(v){ nuevoGasto.fecha = v; }
+function toggleFormGasto(){ formGastoAbierto = !formGastoAbierto; render(); }
+
+function registrarGasto(){
+  const elC = document.getElementById("g-concepto"); if(elC) nuevoGasto.concepto = elC.value;
+  const elF = document.getElementById("g-fecha"); if(elF && elF.value) nuevoGasto.fecha = elF.value;
+
+  if(!nuevoGasto.concepto.trim()){
+    nuevoGasto.error = "Escribe en qué te lo has gastado.";
+    return document.getElementById("zona-error-gasto").innerHTML = `<div class="aviso">${nuevoGasto.error}</div>`;
+  }
+  if(nuevoGasto.importe <= 0){
+    nuevoGasto.error = "Pon el importe del gasto.";
+    return document.getElementById("zona-error-gasto").innerHTML = `<div class="aviso">${nuevoGasto.error}</div>`;
+  }
+  estado.gastos.unshift({ id:String(Date.now()), concepto:nuevoGasto.concepto.trim(), importe:nuevoGasto.importe, fecha:nuevoGasto.fecha });
+  nuevoGasto = { concepto:"", importe:0, fecha:new Date().toISOString().slice(0,10), error:"" };
+  formGastoAbierto = false;
+  guardar(); render();
+}
+
+function borrarGasto(id){
+  pedirConfirmacion("¿Borrar este gasto?", () => {
+    estado.gastos = estado.gastos.filter(g=>g.id!==id);
+    guardar(); render();
+  }, "Borrar");
+}
+
+function vistaAjustes(){
+  const c = estado.config, gpc = c.garrafasPorCaja||3;
+  const s = calc();
+  const campo = (et,k,su) => `
+    <div>
+      <label>${et}</label>
+      <div style="position:relative">
+        <input id="c-${k}" type="number" inputmode="decimal" min="0" value="${c[k]}" oninput="setConfig('${k}',this.value)">
+        <span style="position:absolute;right:14px;top:13px;color:var(--tenue);font-size:14px">${su}</span>
+      </div>
+    </div>`;
+  return `
+  <section class="card kpi-ajustes">
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Stock</div>
+    <div class="rejilla-2" style="margin-top:10px">
+      <div class="mini"><div class="etq">Stock dado de alta</div><div class="v oro">${Math.floor(s.alta/s.gpc)} cajas</div><div class="s">${s.alta} garrafas</div></div>
+      <div class="mini"><div class="etq">Vendido</div><div class="v oro">${Math.floor(s.vend/s.gpc)} cajas</div><div class="s">+${s.vend%s.gpc} garrafas sueltas</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Cómo vendes</div>
+    <div class="rejilla-2">
+      ${campo("Precio garrafa","precioGarrafa","€")}
+      ${campo("Garrafas por caja","garrafasPorCaja","ud")}
+      ${campo("Litros por garrafa","litrosPorGarrafa","L")}
+      ${campo("Cajas de partida","cajasIniciales","cajas")}
+    </div>
+    <div class="etq" style="margin-top:14px">Caja completa: ${eur(c.precioGarrafa*gpc)} · ${gpc*c.litrosPorGarrafa} L</div>
+  </section>
+
+  <section class="card">
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Añadir cajas al almacén</div>
+    <div class="etq" style="margin-top:4px">Cada vez que entre aceite nuevo, apúntalo aquí.</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:6px">
+      <div style="flex:1">
+        <label>Cajas nuevas</label>
+        <div class="contador">
+          <button onclick="setEntrada(nuevasCajas-1)">−</button>
+          <input id="e-cajas" type="number" inputmode="numeric" min="0" value="${nuevasCajas}" oninput="setEntrada(this.value)">
+          <button onclick="setEntrada(nuevasCajas+1)">+</button>
+        </div>
+      </div>
+      <button class="btn-oro" style="flex:0 0 auto;min-width:0" onclick="addEntrada()">Añadir</button>
+    </div>
+    ${estado.entradas.length?`<div style="margin-top:14px">${estado.entradas.map(e=>`
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--borde)">
+        <span class="etq">${fechaCorta(e.fecha)} · +${e.cajas} caja${e.cajas>1?"s":""}</span>
+        <button class="borrar" onclick="quitarEntrada('${e.id}')">Quitar</button>
+      </div>`).join("")}</div>`:""}
+  </section>`;
+}
+
+/* ---------- Acciones ---------- */
+
+function setCliente(v){ nuevo.cliente = v; if(nuevo.error){ nuevo.error = ""; pintarError(); } }
+function setFecha(v){ nuevo.fecha = v; }
+function setNum(k,v){
+  nuevo[k] = Math.max(0, parseInt(v,10) || 0);
+  refrescarPrecio();
+  const el = document.getElementById("f-"+k);
+  if(el && String(nuevo[k]) !== el.value) el.value = nuevo[k];
+}
+function refrescarPrecio(){
+  const s = calc();
+  const tg = nuevo.cajas*s.gpc + nuevo.garrafas;
+  const el = document.getElementById("precio-total");
+  const de = document.getElementById("precio-detalle");
+  const st = document.getElementById("zona-stock");
+  if(el) el.textContent = eur(tg*estado.config.precioGarrafa);
+  if(de) de.textContent = tg + " garrafa" + (tg===1?"":"s") + " × " + estado.config.precioGarrafa + "€";
+  if(st) st.innerHTML = (tg>s.rest && s.rest>=0) ? '<div class="aviso oro">Aviso: solo quedan ' + s.rest + ' garrafas en el almacén.</div>' : "";
+}
+function pintarError(){
+  const el = document.getElementById("zona-error");
+  if(el) el.innerHTML = nuevo.error ? '<div class="aviso">' + nuevo.error + '</div>' : "";
+}
+function setPagado(v){
+  nuevo.pagado = v;
+  const b = document.querySelectorAll("#toggle-pago button");
+  if(b.length){ b[0].className = v?"pag-on":""; b[1].className = v?"":"pen-on"; }
+  const z = document.getElementById("zona-metodo");
+  if(z) z.className = v ? "" : "oculto";
+}
+function setMetodo(m){
+  nuevo.metodo = m;
+  const b = document.querySelectorAll("#toggle-metodo button");
+  if(b.length){ b[0].className = m==="efectivo"?"met-efectivo":""; b[1].className = m==="bizum"?"met-bizum":""; }
+}
+function setConfig(k,v){ estado.config[k] = Math.max(0, Number(v)||0); guardar(); render(); }
+function setEntrada(v){ nuevasCajas = Math.max(0, parseInt(v||0,10)||0); render(); }
+
+function registrar(){
+  const elC = document.getElementById("f-cliente");
+  if(elC) nuevo.cliente = elC.value;
+  const elF = document.getElementById("f-fecha");
+  if(elF && elF.value) nuevo.fecha = elF.value;
+
+  if(!nuevo.cliente.trim()){ nuevo.error="Escribe quién ha hecho el pedido."; return pintarError(); }
+  const gpc = estado.config.garrafasPorCaja||3;
+  const tg = nuevo.cajas*gpc + nuevo.garrafas;
+  if(tg<=0){ nuevo.error="Añade al menos una garrafa o una caja."; return pintarError(); }
+
+  if(editandoPedido){
+    const p = estado.pedidos.find(x=>x.id===editandoPedido);
+    if(p){
+      p.cliente = nuevo.cliente.trim(); p.cajas = nuevo.cajas; p.garrafas = nuevo.garrafas;
+      p.fecha = nuevo.fecha; p.total = tg*estado.config.precioGarrafa;
+      p.pagado = nuevo.pagado; p.metodo = nuevo.metodo;
+    }
+  } else {
+    estado.pedidos.unshift({
+      id:String(Date.now()), cliente:nuevo.cliente.trim(), cajas:nuevo.cajas, garrafas:nuevo.garrafas,
+      fecha:nuevo.fecha, total: tg*estado.config.precioGarrafa, pagado:nuevo.pagado, metodo:nuevo.metodo
+    });
+  }
+  nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().slice(0,10), pagado:false, metodo:"efectivo", error:"" };
+  editandoPedido = null;
+  formAbierto = false;
+  guardar(); render();
+}
+function editarPedido(id){
+  const p = estado.pedidos.find(x=>x.id===id); if(!p) return;
+  nuevo = {
+    cliente: p.cliente, cajas: p.cajas, garrafas: p.garrafas, fecha: p.fecha,
+    pagado: p.pagado, metodo: p.metodo || "efectivo", error: ""
+  };
+  editandoPedido = id;
+  formAbierto = true;
+  render();
+  if(typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "smooth" });
+}
+let cobrandoPedido = null;
+function togglePagado(id){
+  const p = estado.pedidos.find(x=>x.id===id); if(!p) return;
+  if(p.pagado){
+    p.pagado = false;
+    guardar(); render();
+    return;
+  }
+  cobrandoPedido = id;
+  const t = document.getElementById("cobro-texto");
+  if(t) t.textContent = `${p.cliente} · ${eur(p.total)}`;
+  const m = document.getElementById("modal-cobro");
+  if(m) m.classList.remove("oculto");
+}
+function cerrarCobro(){
+  const m = document.getElementById("modal-cobro"); if(m) m.classList.add("oculto");
+  cobrandoPedido = null;
+}
+function confirmarCobro(metodo){
+  const p = estado.pedidos.find(x=>x.id===cobrandoPedido);
+  const m = document.getElementById("modal-cobro"); if(m) m.classList.add("oculto");
+  cobrandoPedido = null;
+  if(!p) return;
+  p.pagado = true;
+  p.metodo = metodo;
+  guardar(); render();
+}
+function cambiarMetodo(id){
+  const p = estado.pedidos.find(x=>x.id===id); if(!p) return;
+  p.metodo = (p.metodo||"efectivo") === "efectivo" ? "bizum" : "efectivo";
+  guardar(); render();
+}
+function borrarPedido(id){
+  pedirConfirmacion("¿Borrar este pedido?", () => {
+    estado.pedidos = estado.pedidos.filter(p=>p.id!==id);
+    guardar(); render();
+  }, "Borrar");
+}
+function addEntrada(){
+  if(nuevasCajas<=0) return;
+  estado.entradas.unshift({id:String(Date.now()),cajas:nuevasCajas,fecha:new Date().toISOString().slice(0,10)});
+  nuevasCajas = 0; guardar(); render();
+}
+function quitarEntrada(id){ estado.entradas = estado.entradas.filter(e=>e.id!==id); guardar(); render(); }
+function irA(t){
+  if(t!=="pedidos"){ formAbierto = false; editandoPedido = null; }
+  if(t!=="gastos") formGastoAbierto = false;
+  tab = t; render();
+}
+function toggleForm(){
+  if(formAbierto){
+    formAbierto = false;
+    editandoPedido = null;
+    nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().slice(0,10), pagado:false, metodo:"efectivo", error:"" };
+  } else {
+    formAbierto = true;
+  }
+  render();
+}
+
+/* ---------- Confirmación propia (no usa confirm() nativo: eso saca de pantalla completa) ---------- */
+
+let confirmarCallback = null;
+function pedirConfirmacion(texto, callback, textoBoton){
+  confirmarCallback = callback;
+  const t = document.getElementById("confirmar-texto"); if(t) t.textContent = texto;
+  const b = document.getElementById("btn-confirmar-si"); if(b) b.textContent = textoBoton || "Borrar";
+  const m = document.getElementById("modal-confirmar"); if(m) m.classList.remove("oculto");
+}
+function cancelarConfirmacion(){
+  const m = document.getElementById("modal-confirmar"); if(m) m.classList.add("oculto");
+  confirmarCallback = null;
+}
+function confirmarSi(){
+  const cb = confirmarCallback;
+  const m = document.getElementById("modal-confirmar"); if(m) m.classList.add("oculto");
+  confirmarCallback = null;
+  if(cb) cb();
+}
+
+/* ---------- Copia de seguridad ---------- */
+
+function abrirDatos(){ document.getElementById("modal").classList.remove("oculto"); pintarEstado(); }
+function cerrarDatos(){
+  document.getElementById("modal").classList.add("oculto");
+  document.getElementById("zona-pegar").classList.add("oculto");
+  document.getElementById("zona-texto").classList.add("oculto");
+  document.getElementById("msg-datos").innerHTML = "";
+}
+function verPegar(){
+  document.getElementById("zona-texto").classList.add("oculto");
+  document.getElementById("zona-pegar").classList.remove("oculto");
+  document.getElementById("texto-pegar").focus();
+}
+function textoCopia(){
+  return JSON.stringify({ app:"control-aceite", version:1, fecha:new Date().toISOString(), ...estado });
+}
+function verTexto(){
+  document.getElementById("zona-pegar").classList.add("oculto");
+  const z = document.getElementById("zona-texto");
+  z.classList.remove("oculto");
+  const t = document.getElementById("texto-salida");
+  t.value = textoCopia();
+  t.focus(); t.select();
+  msg("Copia lista. Púlsala para seleccionar y luego copia, o usa el botón de abajo.", true);
+}
+async function copiarTexto(){
+  const t = document.getElementById("texto-salida");
+  const txt = t.value;
+  try{
+    await navigator.clipboard.writeText(txt);
+    msg("Copiado al portapapeles.", true);
+  }catch(e){
+    t.focus(); t.select();
+    try{ document.execCommand("copy"); msg("Copiado.", true); }
+    catch(e2){ msg("Selecciona el texto y cópialo a mano.", false); }
+  }
+}
+function msg(t, ok){ document.getElementById("msg-datos").innerHTML = `<p class="${ok?"ok":"ko"}">${t}</p>`; }
+
+function exportar(){
+  const copia = { app:"control-aceite", version:1, fecha:new Date().toISOString(), ...estado };
+  const blob = new Blob([JSON.stringify(copia,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `aceite-copia-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  msg(`Copia descargada con ${estado.pedidos.length} pedidos.`, true);
+}
+
+function aplicar(txt){
+  let d;
+  try{ d = JSON.parse(txt); }
+  catch(e){ return msg("El archivo no se entiende. Comprueba que es una copia de esta app.", false); }
+  if(!d || !Array.isArray(d.pedidos)) return msg("El archivo no tiene pedidos de esta app.", false);
+  pedirConfirmacion(`Vas a restaurar ${d.pedidos.length} pedidos. Se sustituyen los datos actuales. ¿Seguir?`, () => {
+    aplicarDatos(d);
+    guardar(); render();
+    msg(`Restaurados ${d.pedidos.length} pedidos.`, true);
+  }, "Restaurar");
+}
+
+function importarArchivo(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const lector = new FileReader();
+  lector.onload = () => aplicar(String(lector.result));
+  lector.onerror = () => msg("No se ha podido leer el archivo. Prueba con 'Importar pegando texto'.", false);
+  lector.readAsText(f);
+  input.value = "";
+}
+
+function importarTexto(){
+  const t = document.getElementById("texto-pegar").value.trim();
+  if(!t) return msg("Pega primero el contenido de la copia.", false);
+  aplicar(t);
+}
+
+/* ---------- Render ---------- */
+
+function render(){
+  document.getElementById("nav").innerHTML = [
+    ["resumen","Resumen"],["pedidos","Pedidos"],["gastos","Gastos"],["clientes","Clientes"],["ajustes","Ajustes"]
+  ].map(([id,l])=>`<button class="${tab===id?"on":""}" onclick="irA('${id}')">${l}</button>`).join("");
+
+  const activo = document.activeElement;
+  const marca = activo && activo.tagName==="INPUT" ? activo.id : null;
+
+  const v = document.getElementById("vista");
+  v.className = "vista-" + tab;
+  v.innerHTML = tab==="resumen" ? vistaResumen()
+    : tab==="pedidos" ? vistaPedidos()
+    : tab==="clientes" ? vistaClientes()
+    : tab==="gastos" ? vistaGastos()
+    : vistaAjustes();
+
+  if(marca){ const el = document.getElementById(marca); if(el){ el.focus(); try{ el.setSelectionRange(el.value.length,el.value.length); }catch(e){} } }
+}
+
+/* ---------- Pantalla completa ---------- */
+
+function elementoPantallaCompleta(){
+  return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+function alternarPantallaCompleta(){
+  const el = document.documentElement;
+  if(!elementoPantallaCompleta()){
+    const pedir = el.requestFullscreen || el.webkitRequestFullscreen;
+    if(pedir) pedir.call(el).catch(()=>{});
+  } else {
+    const salir = document.exitFullscreen || document.webkitExitFullscreen;
+    if(salir) salir.call(document).catch(()=>{});
+  }
+}
+function pintarIconoPantalla(){
+  const ic = document.getElementById("ic-pantalla");
+  if(ic) ic.textContent = elementoPantallaCompleta() ? "⤡" : "⤢";
+}
+function alCambiarPantallaCompleta(){ pintarIconoPantalla(); render(); }
+document.addEventListener("fullscreenchange", alCambiarPantallaCompleta);
+document.addEventListener("webkitfullscreenchange", alCambiarPantallaCompleta);
+
+document.addEventListener("keydown", e => { if(e.key === "Escape"){ cancelarConfirmacion(); cerrarCobro(); cerrarDatos(); } });
+
+/* ---------- App instalable ---------- */
+let avisoInstalar = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); avisoInstalar = e; document.getElementById("btn-instalar").classList.remove("oculto"); });
+window.addEventListener("appinstalled", () => { avisoInstalar = null; document.getElementById("btn-instalar").classList.add("oculto"); });
+const enApp = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+if(esIOS && !enApp) document.getElementById("btn-instalar").classList.remove("oculto");
+async function instalarApp(){
+  if(avisoInstalar){ avisoInstalar.prompt(); await avisoInstalar.userChoice; avisoInstalar = null; document.getElementById("btn-instalar").classList.add("oculto"); return; }
+  pedirConfirmacion("En iPhone/iPad: pulsa el botón Compartir (el cuadrado con la flecha) de Safari y elige «Añadir a pantalla de inicio».", null, "Entendido");
+}
+if("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+window.addEventListener("hashchange", vincularDesdeEnlace);
+cargar().then(vincularDesdeEnlace);
+</script>
+</body>
+</html>
