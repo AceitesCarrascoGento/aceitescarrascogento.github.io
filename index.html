@@ -488,6 +488,27 @@
     .vistazo h2{margin:18px 0 10px}
     .vistazo .card-anyos{min-height:130px}
   }
+  /* ---------- Remesas ---------- */
+  .panel-remesa{margin-top:12px;padding:14px;border:1px solid var(--borde);border-radius:16px;background:#0A101A}
+  .lista-remesas{margin-top:12px}
+  .remesa-fila{display:flex;align-items:center;gap:8px;padding:10px 2px;border-top:1px solid var(--borde)}
+  .remesa-fila.editando .rem-txt b{color:var(--oro)}
+  .rem-txt{flex:1;display:flex;align-items:baseline;gap:10px;min-width:0}
+  .rem-txt b{font-size:16px;font-weight:600}
+  .rem-txt span{font-size:14px;color:var(--tenue)}
+  .ic-btn{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:10px;cursor:pointer;
+    background:transparent;border:1px solid var(--borde);font-size:16px;line-height:1;font-family:inherit}
+  .ic-btn.lapiz{color:#F59E3B;border-color:rgba(245,158,59,.35)}
+  .ic-btn.equis{color:var(--rojo);border-color:rgba(244,121,107,.35);font-weight:700}
+  .toggle-remesa{flex-wrap:wrap}
+  .toggle-remesa button{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:120px}
+  .toggle-remesa button small{font-size:11px;font-weight:500;opacity:.85}
+  .toggle-remesa button.rem-on{background:rgba(248,218,100,.16);color:var(--oro);box-shadow:0 0 14px rgba(248,218,100,.18)}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  input[type=number]{-moz-appearance:textfield;appearance:textfield}
+  .toggle button{min-width:0;padding:9px 4px}
+  .rejilla-2 > *{min-width:0}
+  @media (max-width:899px){ .vistazo .mini{padding:18px 12px} }
   .sync-caja{margin:14px 0 4px;padding:14px;border:1px solid var(--borde);border-radius:16px;background:var(--panel-2)}
   .sync-tit{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
   .sync-caja a{color:var(--oro)}
@@ -593,7 +614,8 @@
 <script>
 const KEY = "aceite:datos";
 const DEF = { garrafasPorCaja:3, litrosPorGarrafa:5, precioGarrafa:30, cajasIniciales:0 };
-let estado = { config:{...DEF}, pedidos:[], entradas:[], gastos:[], actualizado:0 };
+let estado = { config:{...DEF}, pedidos:[], entradas:[], gastos:[], remesas:[], actualizado:0 };
+let formRemesa = null;
 let tab = "resumen";
 let nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().slice(0,10), pagado:false, metodo:"efectivo", error:"" };
 let nuevasCajas = 0;
@@ -673,7 +695,68 @@ function aplicarDatos(d){
   estado.pedidos = Array.isArray(d.pedidos) ? d.pedidos : [];
   estado.entradas = Array.isArray(d.entradas) ? d.entradas : [];
   estado.gastos = Array.isArray(d.gastos) ? d.gastos : [];
+  estado.remesas = Array.isArray(d.remesas) ? d.remesas : migrarRemesas(d);
   estado.actualizado = d.actualizado || 0;
+}
+
+/* ---------- Remesas (cada entrada de aceite, por año) ---------- */
+// Pasa los datos antiguos (cajas de partida + entradas) a remesas por año
+function migrarRemesas(d){
+  const c = {...DEF, ...(d.config||{})};
+  const base = { precioGarrafa:c.precioGarrafa, garrafasPorCaja:c.garrafasPorCaja, litrosPorGarrafa:c.litrosPorGarrafa };
+  const pedidos = Array.isArray(d.pedidos) ? d.pedidos : [];
+  const hoy = new Date().getFullYear();
+  const anyos = pedidos.map(p=>parseInt(String(p.fecha).slice(0,4),10)).filter(a=>a>2000);
+  const anyoIni = anyos.length ? Math.min(...anyos) : hoy;
+  const porAnyo = {};
+  if((+c.cajasIniciales||0) > 0) porAnyo[anyoIni] = (porAnyo[anyoIni]||0) + (+c.cajasIniciales);
+  (Array.isArray(d.entradas)?d.entradas:[]).forEach(e=>{
+    const a = parseInt(String(e.fecha).slice(0,4),10) || anyoIni;
+    porAnyo[a] = (porAnyo[a]||0) + (+e.cajas||0);
+  });
+  return Object.keys(porAnyo).sort().map(a=>({ id:"r"+a, anyo:+a, cajas:porAnyo[a], ...base }));
+}
+function remesasOrdenadas(){ return [...estado.remesas].sort((a,b)=>a.anyo-b.anyo || String(a.id).localeCompare(String(b.id))); }
+function gpcDe(r){ return (r && +r.garrafasPorCaja) || estado.config.garrafasPorCaja || 3; }
+function remesaDe(p){ return estado.remesas.find(r=>r.id===p.remesaId); }
+function garrafasPedido(p){ return p.cajas*gpcDe(remesaDe(p)) + p.garrafas; }
+// Stock de cada remesa. Los pedidos sin remesa se descuentan de la más antigua con stock.
+function stockRemesas(excluirId){
+  const lista = remesasOrdenadas().map(r=>({ r, alta:r.cajas*gpcDe(r), vend:0 }));
+  const sin = [];
+  estado.pedidos.forEach(p=>{
+    if(p.id===excluirId) return;
+    const x = lista.find(l=>l.r.id===p.remesaId);
+    if(x) x.vend += garrafasPedido(p); else sin.push(p);
+  });
+  sin.sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).forEach(p=>{
+    let g = garrafasPedido(p);
+    for(const x of lista){ const libre = x.alta - x.vend; if(libre<=0) continue; const t = Math.min(libre,g); x.vend += t; g -= t; if(g<=0) break; }
+    if(g>0 && lista.length) lista[lista.length-1].vend += g;
+  });
+  lista.forEach(x=>{ x.rest = x.alta - x.vend; });
+  return lista;
+}
+function textoQuedan(x){
+  const g = gpcDe(x.r), r = Math.max(0,x.rest);
+  return Math.floor(r/g) + " caja" + (Math.floor(r/g)===1?"":"s") + (r%g ? " +" + (r%g) : "");
+}
+function remesaPorDefecto(){
+  const st = stockRemesas(editandoPedido);
+  const c = st.find(x=>x.rest>0);
+  return c ? c.r : (st.length ? st[st.length-1].r : null);
+}
+function remesaElegida(){ return estado.remesas.find(r=>r.id===nuevo.remesaId) || remesaPorDefecto(); }
+function precioActual(){ const r = remesaElegida(); return r ? +r.precioGarrafa : estado.config.precioGarrafa; }
+function gpcActual(){ return gpcDe(remesaElegida()); }
+function setRemesa(id){ nuevo.remesaId = id; render(); }
+function selectorRemesa(){
+  const st = stockRemesas(editandoPedido);
+  const sel = remesaElegida();
+  const ops = st.filter(x=>x.rest>0 || (sel && x.r.id===sel.id));
+  if(ops.length < 2) return "";
+  return `<label>¿De qué remesa?</label>
+    <div class="toggle toggle-remesa">${ops.map(x=>`<button class="${sel&&x.r.id===sel.id?"rem-on":""}" onclick="setRemesa('${x.r.id}')">Remesa ${x.r.anyo}<small>quedan ${textoQuedan(x)}</small></button>`).join("")}</div>`;
 }
 
 // Cuál de dos copias es más nueva: por fecha de cambio; si no hay, la que tenga más datos.
@@ -847,8 +930,8 @@ setInterval(()=>{ if(document.visibilityState === "visible" && !colaGuardado) si
 
 function calc(){
   const c = estado.config, gpc = c.garrafasPorCaja||3;
-  const alta = c.cajasIniciales*gpc + estado.entradas.reduce((s,e)=>s+e.cajas*gpc,0);
-  const vend = estado.pedidos.reduce((s,p)=>s+p.cajas*gpc+p.garrafas,0);
+  const alta = estado.remesas.reduce((s,r)=>s+r.cajas*gpcDe(r),0);
+  const vend = estado.pedidos.reduce((s,p)=>s+garrafasPedido(p),0);
   const rest = alta - vend;
   const ingresos = estado.pedidos.reduce((s,p)=>s+p.total,0);
   const pagados = estado.pedidos.filter(p=>p.pagado);
@@ -884,12 +967,12 @@ function vistaResumen(){
   </div>
 
   <div class="rejilla-2">
-    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado).length} pedidos pagados</div></div>
-    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div><div class="s">${estado.pedidos.filter(p=>!p.pagado).length} pedidos sin pagar</div></div>
-    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div><div class="s">${estado.gastos.length} apunte${estado.gastos.length===1?"":"s"}</div></div>
-    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div><div class="s">${Math.max(0,s.rest)} garrafas</div></div>
-    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&(p.metodo||"efectivo")==="efectivo").length} pedidos</div></div>
-    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&p.metodo==="bizum").length} pedidos</div></div>
+    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>
+    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>
+    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>
+    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div></div>
+    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>
+    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>
   </div>
 
   ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
@@ -920,12 +1003,12 @@ function vistaResumen(){
   </div>
 
   <div class="rejilla-2">
-    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado).length} pedidos pagados</div></div>
-    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div><div class="s">${estado.pedidos.filter(p=>!p.pagado).length} pedidos sin pagar</div></div>
-    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div><div class="s">${estado.gastos.length} apunte${estado.gastos.length===1?"":"s"}</div></div>
-    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div><div class="s">${Math.max(0,s.rest)} garrafas</div></div>
-    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&(p.metodo||"efectivo")==="efectivo").length} pedidos</div></div>
-    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div><div class="s">${estado.pedidos.filter(p=>p.pagado&&p.metodo==="bizum").length} pedidos</div></div>
+    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>
+    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>
+    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>
+    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div></div>
+    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>
+    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>
   </div>
 
   ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
@@ -1049,8 +1132,9 @@ function itemPedidoResumen(p){
 
 function vistaPedidos(){
   const s = calc();
-  const tg = nuevo.cajas*s.gpc + nuevo.garrafas;
-  const total = tg*estado.config.precioGarrafa;
+  const gpcP = gpcActual(), precioP = precioActual();
+  const tg = nuevo.cajas*gpcP + nuevo.garrafas;
+  const total = tg*precioP;
   return `
   <button class="btn-oro" style="width:100%;margin-bottom:12px" onclick="toggleForm()">
     ${formAbierto ? "✕ Cerrar" : "+ Nuevo pedido"}
@@ -1062,9 +1146,11 @@ function vistaPedidos(){
     <label>Quién lo ha pedido</label>
     <input type="text" id="f-cliente" placeholder="Nombre" value="${esc(nuevo.cliente)}" oninput="setCliente(this.value)">
 
+    ${selectorRemesa()}
+
     <div class="rejilla-2" style="margin-top:6px">
       <div>
-        <label>Cajas (${s.gpc} garrafas)</label>
+        <label>Cajas (${gpcP} garrafas)</label>
         <div class="contador">
           <button onclick="setNum('cajas',nuevo.cajas-1)" aria-label="Quitar caja">−</button>
           <input id="f-cajas" type="number" inputmode="numeric" min="0" value="${nuevo.cajas}" oninput="setNum('cajas',this.value)">
@@ -1106,7 +1192,7 @@ function vistaPedidos(){
     <div class="precio">
       <div>
         <div class="etq">Precio</div>
-        <div id="precio-detalle" class="etq" style="font-size:12px">${tg} garrafa${tg===1?"":"s"} × ${estado.config.precioGarrafa}€</div>
+        <div id="precio-detalle" class="etq" style="font-size:12px">${tg} garrafa${tg===1?"":"s"} × ${precioP}€</div>
       </div>
       <div id="precio-total" class="v mono">${eur(total)}</div>
     </div>
@@ -1161,7 +1247,7 @@ function vistaClientes(){
   const m = new Map();
   estado.pedidos.forEach(p=>{
     const c = m.get(p.cliente) || {cliente:p.cliente,garrafas:0,total:0,pendiente:0,n:0};
-    c.garrafas += p.cajas*gpc+p.garrafas; c.total += p.total;
+    c.garrafas += garrafasPedido(p); c.total += p.total;
     c.pendiente += p.pagado?0:p.total; c.n++;
     m.set(p.cliente,c);
   });
@@ -1271,56 +1357,111 @@ function borrarGasto(id){
 }
 
 function vistaAjustes(){
-  const c = estado.config, gpc = c.garrafasPorCaja||3;
   const s = calc();
-  const campo = (et,k,su) => `
-    <div>
-      <label>${et}</label>
-      <div style="position:relative">
-        <input id="c-${k}" type="number" inputmode="decimal" min="0" value="${c[k]}" oninput="setConfig('${k}',this.value)">
-        <span style="position:absolute;right:14px;top:13px;color:var(--tenue);font-size:14px">${su}</span>
-      </div>
-    </div>`;
+  const lista = remesasOrdenadas().reverse();
+  const nuevaAbierta = formRemesa && !formRemesa.id;
   return `
   <section class="card kpi-ajustes">
     <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Stock</div>
     <div class="rejilla-2" style="margin-top:10px">
-      <div class="mini"><div class="etq">Stock dado de alta</div><div class="v oro">${Math.floor(s.alta/s.gpc)} cajas</div><div class="s">${s.alta} garrafas</div></div>
-      <div class="mini"><div class="etq">Vendido</div><div class="v oro">${Math.floor(s.vend/s.gpc)} cajas</div><div class="s">+${s.vend%s.gpc} garrafas sueltas</div></div>
+      <div class="mini"><div class="etq">Stock dado de alta</div><div class="v oro">${Math.floor(s.alta/s.gpc)} cajas</div></div>
+      <div class="mini"><div class="etq">Vendido</div><div class="v oro">${Math.floor(s.vend/s.gpc)} cajas</div></div>
     </div>
   </section>
 
   <section class="card">
-    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Cómo vendes</div>
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Remesas</div>
+    <button class="btn-oro" style="width:100%;margin-top:12px" onclick="${nuevaAbierta?"cerrarRemesa()":"abrirRemesa()"}">${nuevaAbierta?"✕ Cerrar":"+ Añadir nueva remesa"}</button>
+    ${formRemesa ? panelRemesa() : ""}
+    ${lista.length ? `<div class="lista-remesas">${lista.map(r=>`
+      <div class="remesa-fila${formRemesa&&formRemesa.id===r.id?" editando":""}">
+        <div class="rem-txt"><b>Remesa ${r.anyo}</b><span>${r.cajas} caja${r.cajas===1?"":"s"}</span></div>
+        <button class="ic-btn lapiz" onclick="editarRemesa('${r.id}')" aria-label="Editar remesa ${r.anyo}" title="Editar">✎</button>
+        <button class="ic-btn equis" onclick="borrarRemesa('${r.id}')" aria-label="Borrar remesa ${r.anyo}" title="Borrar">✕</button>
+      </div>`).join("")}</div>` : `<div class="vacio" style="margin-top:14px">Aún no hay remesas. Añade la primera con el botón de arriba.</div>`}
+  </section>`;
+}
+
+function panelRemesa(){
+  const f = formRemesa;
+  const campo = (et,k,su,modo) => `
+    <div>
+      <label>${et}</label>
+      <div style="position:relative">
+        <input id="rm-${k}" type="number" inputmode="${modo||"decimal"}" min="0" value="${f[k]}" oninput="setRem('${k}',this.value)">
+        <span style="position:absolute;right:14px;top:13px;color:var(--tenue);font-size:14px">${su}</span>
+      </div>
+    </div>`;
+  return `
+  <div class="panel-remesa">
+    <div class="etq" style="font-size:14px;font-weight:600;color:var(--texto)">${f.id?"Editar remesa":"Nueva remesa"}</div>
     <div class="rejilla-2">
-      ${campo("Precio garrafa","precioGarrafa","€")}
-      ${campo("Garrafas por caja","garrafasPorCaja","ud")}
-      ${campo("Litros por garrafa","litrosPorGarrafa","L")}
-      ${campo("Cajas de partida","cajasIniciales","cajas")}
-    </div>
-    <div class="etq" style="margin-top:14px">Caja completa: ${eur(c.precioGarrafa*gpc)} · ${gpc*c.litrosPorGarrafa} L</div>
-  </section>
-
-  <section class="card">
-    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Añadir cajas al almacén</div>
-    <div class="etq" style="margin-top:4px">Cada vez que entre aceite nuevo, apúntalo aquí.</div>
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:6px">
-      <div style="flex:1">
-        <label>Cajas nuevas</label>
+      ${campo("Año de la remesa","anyo","","numeric")}
+      <div>
+        <label>Cajas</label>
         <div class="contador">
-          <button onclick="setEntrada(nuevasCajas-1)">−</button>
-          <input id="e-cajas" type="number" inputmode="numeric" min="0" value="${nuevasCajas}" oninput="setEntrada(this.value)">
-          <button onclick="setEntrada(nuevasCajas+1)">+</button>
+          <button onclick="setRem('cajas',formRemesa.cajas-1,true)">−</button>
+          <input id="rm-cajas" type="number" inputmode="numeric" min="0" value="${f.cajas}" oninput="setRem('cajas',this.value)">
+          <button onclick="setRem('cajas',formRemesa.cajas+1,true)">+</button>
         </div>
       </div>
-      <button class="btn-oro" style="flex:0 0 auto;min-width:0" onclick="addEntrada()">Añadir</button>
+      ${campo("Precio garrafa","precioGarrafa","€")}
+      ${campo("Garrafas por caja","garrafasPorCaja","ud","numeric")}
+      ${campo("Litros por garrafa","litrosPorGarrafa","L")}
     </div>
-    ${estado.entradas.length?`<div style="margin-top:14px">${estado.entradas.map(e=>`
-      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--borde)">
-        <span class="etq">${fechaCorta(e.fecha)} · +${e.cajas} caja${e.cajas>1?"s":""}</span>
-        <button class="borrar" onclick="quitarEntrada('${e.id}')">Quitar</button>
-      </div>`).join("")}</div>`:""}
-  </section>`;
+    <div id="rm-resumen" class="etq" style="margin-top:12px">${textoCaja(f)}</div>
+    <div id="rm-error"></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn-linea" style="flex:1" onclick="cerrarRemesa()">Cancelar</button>
+      <button class="btn-oro" style="flex:2;min-width:0" onclick="guardarRemesa()">${f.id?"Guardar cambios":"Guardar remesa"}</button>
+    </div>
+  </div>`;
+}
+function textoCaja(f){ const g = +f.garrafasPorCaja||0; return `Caja completa: ${eur((+f.precioGarrafa||0)*g)} · ${g*(+f.litrosPorGarrafa||0)} L`; }
+function abrirRemesa(){
+  const c = estado.config;
+  formRemesa = { id:null, anyo:new Date().getFullYear(), cajas:0, precioGarrafa:c.precioGarrafa, garrafasPorCaja:c.garrafasPorCaja, litrosPorGarrafa:c.litrosPorGarrafa };
+  render();
+}
+function editarRemesa(id){
+  const r = estado.remesas.find(x=>x.id===id); if(!r) return;
+  formRemesa = { id:r.id, anyo:r.anyo, cajas:r.cajas, precioGarrafa:r.precioGarrafa, garrafasPorCaja:r.garrafasPorCaja, litrosPorGarrafa:r.litrosPorGarrafa };
+  render();
+}
+function cerrarRemesa(){ formRemesa = null; render(); }
+function setRem(k,v,repintar){
+  if(!formRemesa) return;
+  formRemesa[k] = Math.max(0, Number(v)||0);
+  if(k==="cajas" || k==="anyo" || k==="garrafasPorCaja") formRemesa[k] = Math.floor(formRemesa[k]);
+  if(repintar){ render(); return; }
+  const el = document.getElementById("rm-resumen"); if(el) el.textContent = textoCaja(formRemesa);
+}
+function guardarRemesa(){
+  const f = formRemesa; if(!f) return;
+  const err = document.getElementById("rm-error");
+  const fallo = t => { if(err) err.innerHTML = `<div class="aviso">${t}</div>`; };
+  if(!(f.anyo >= 2000 && f.anyo <= 2100)) return fallo("Escribe el año de la remesa (por ejemplo, " + new Date().getFullYear() + ").");
+  if(!(f.cajas > 0)) return fallo("Añade al menos una caja.");
+  if(!(f.garrafasPorCaja > 0)) return fallo("Indica cuántas garrafas lleva cada caja.");
+  const datos = { anyo:f.anyo, cajas:f.cajas, precioGarrafa:f.precioGarrafa, garrafasPorCaja:f.garrafasPorCaja, litrosPorGarrafa:f.litrosPorGarrafa };
+  if(f.id){
+    const r = estado.remesas.find(x=>x.id===f.id); if(r) Object.assign(r, datos);
+  } else {
+    estado.remesas.push({ id:"r"+Date.now(), ...datos });
+  }
+  // La última remesa marca los valores por defecto
+  const ultima = remesasOrdenadas().slice(-1)[0];
+  if(ultima){ estado.config.precioGarrafa = +ultima.precioGarrafa; estado.config.garrafasPorCaja = +ultima.garrafasPorCaja; estado.config.litrosPorGarrafa = +ultima.litrosPorGarrafa; }
+  formRemesa = null;
+  guardar(); render();
+}
+function borrarRemesa(id){
+  const r = estado.remesas.find(x=>x.id===id); if(!r) return;
+  pedirConfirmacion(`¿Seguro que quieres borrar la Remesa ${r.anyo} (${r.cajas} caja${r.cajas===1?"":"s"})? No se puede deshacer.`, () => {
+    estado.remesas = estado.remesas.filter(x=>x.id!==id);
+    if(formRemesa && formRemesa.id===id) formRemesa = null;
+    guardar(); render();
+  }, "Borrar");
 }
 
 /* ---------- Acciones ---------- */
@@ -1334,14 +1475,16 @@ function setNum(k,v){
   if(el && String(nuevo[k]) !== el.value) el.value = nuevo[k];
 }
 function refrescarPrecio(){
-  const s = calc();
-  const tg = nuevo.cajas*s.gpc + nuevo.garrafas;
+  const r = remesaElegida();
+  const x = r ? stockRemesas(editandoPedido).find(y=>y.r.id===r.id) : null;
+  const precio = precioActual();
+  const tg = nuevo.cajas*gpcActual() + nuevo.garrafas;
   const el = document.getElementById("precio-total");
   const de = document.getElementById("precio-detalle");
   const st = document.getElementById("zona-stock");
-  if(el) el.textContent = eur(tg*estado.config.precioGarrafa);
-  if(de) de.textContent = tg + " garrafa" + (tg===1?"":"s") + " × " + estado.config.precioGarrafa + "€";
-  if(st) st.innerHTML = (tg>s.rest && s.rest>=0) ? '<div class="aviso oro">Aviso: solo quedan ' + s.rest + ' garrafas en el almacén.</div>' : "";
+  if(el) el.textContent = eur(tg*precio);
+  if(de) de.textContent = tg + " garrafa" + (tg===1?"":"s") + " × " + precio + "€";
+  if(st) st.innerHTML = (x && tg > x.rest) ? '<div class="aviso oro">Aviso: de la remesa ' + r.anyo + ' solo quedan ' + Math.max(0,x.rest) + ' garrafas.</div>' : "";
 }
 function pintarError(){
   const el = document.getElementById("zona-error");
@@ -1369,7 +1512,8 @@ function registrar(){
   if(elF && elF.value) nuevo.fecha = elF.value;
 
   if(!nuevo.cliente.trim()){ nuevo.error="Escribe quién ha hecho el pedido."; return pintarError(); }
-  const gpc = estado.config.garrafasPorCaja||3;
+  const rem = remesaElegida();
+  const gpc = gpcActual(), precio = precioActual();
   const tg = nuevo.cajas*gpc + nuevo.garrafas;
   if(tg<=0){ nuevo.error="Añade al menos una garrafa o una caja."; return pintarError(); }
 
@@ -1377,16 +1521,16 @@ function registrar(){
     const p = estado.pedidos.find(x=>x.id===editandoPedido);
     if(p){
       p.cliente = nuevo.cliente.trim(); p.cajas = nuevo.cajas; p.garrafas = nuevo.garrafas;
-      p.fecha = nuevo.fecha; p.total = tg*estado.config.precioGarrafa;
+      p.fecha = nuevo.fecha; p.total = tg*precio; p.remesaId = rem ? rem.id : null;
       p.pagado = nuevo.pagado; p.metodo = nuevo.metodo;
     }
   } else {
     estado.pedidos.unshift({
       id:String(Date.now()), cliente:nuevo.cliente.trim(), cajas:nuevo.cajas, garrafas:nuevo.garrafas,
-      fecha:nuevo.fecha, total: tg*estado.config.precioGarrafa, pagado:nuevo.pagado, metodo:nuevo.metodo
+      fecha:nuevo.fecha, total: tg*precio, pagado:nuevo.pagado, metodo:nuevo.metodo, remesaId: rem ? rem.id : null
     });
   }
-  nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().slice(0,10), pagado:false, metodo:"efectivo", error:"" };
+  nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().slice(0,10), pagado:false, metodo:"efectivo", error:"", remesaId:null };
   editandoPedido = null;
   formAbierto = false;
   guardar(); render();
@@ -1395,7 +1539,7 @@ function editarPedido(id){
   const p = estado.pedidos.find(x=>x.id===id); if(!p) return;
   nuevo = {
     cliente: p.cliente, cajas: p.cajas, garrafas: p.garrafas, fecha: p.fecha,
-    pagado: p.pagado, metodo: p.metodo || "efectivo", error: ""
+    pagado: p.pagado, metodo: p.metodo || "efectivo", error: "", remesaId: p.remesaId || null
   };
   editandoPedido = id;
   formAbierto = true;
