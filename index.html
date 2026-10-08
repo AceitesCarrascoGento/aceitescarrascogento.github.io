@@ -119,7 +119,7 @@
   .valor-anyo{font-size:22px;font-weight:700;color:var(--oro);font-family:'JetBrains Mono',monospace;line-height:1;height:26px;text-shadow:0 0 16px rgba(248,218,100,.35);white-space:nowrap}
   .progreso{padding:6px 4px 2px}
   .progreso-num{text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:38px;color:var(--oro);text-shadow:0 0 20px rgba(248,218,100,.3)}
-  .progreso-num span{font-size:.5em;color:var(--tenue);font-weight:600}
+  .progreso-num span{font-size:.5em;color:var(--tenue);font-weight:600;margin-left:5px}
   .barra-pct{margin-top:10px;height:14px;border-radius:999px;background:#0C1329;border:1px solid var(--borde);overflow:hidden}
   .relleno-pct{height:100%;border-radius:999px;background:linear-gradient(90deg,#EDC445,#FCE58F);box-shadow:0 0 12px rgba(248,218,100,.4);transition:width .5s}
   .dona-envoltorio{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;padding:4px}
@@ -621,6 +621,7 @@ let nuevo = { cliente:"", cajas:0, garrafas:0, fecha:new Date().toISOString().sl
 let nuevasCajas = 0;
 let formAbierto = false;
 let formGastoAbierto = false;
+let editandoGasto = null;
 let editandoPedido = null;
 let buscarPedido = "";
 let subTabPedidos = "pendientes";
@@ -970,7 +971,7 @@ function vistaResumen(){
     <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>
     <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>
     <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>
-    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div></div>
+    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""}</div></div>
     <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>
     <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>
   </div>
@@ -1006,7 +1007,7 @@ function vistaResumen(){
     <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>
     <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>
     <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>
-    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""} cajas</div></div>
+    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""}</div></div>
     <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>
     <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>
   </div>
@@ -1110,8 +1111,8 @@ function itemPedido(p){
     <div style="text-align:right">
       <div class="p ${p.pagado?"oro":"rojo"}">${eur(p.total)}</div>
       <div style="margin-top:4px;display:flex;gap:10px;justify-content:flex-end">
-        <button class="borrar" onclick="editarPedido('${p.id}')">Editar</button>
-        <button class="borrar" onclick="borrarPedido('${p.id}')">Borrar</button>
+        <button class="ic-btn lapiz" onclick="editarPedido('${p.id}')" aria-label="Editar pedido" title="Editar">✎</button>
+        <button class="ic-btn equis" onclick="borrarPedido('${p.id}')" aria-label="Borrar pedido" title="Borrar">✕</button>
       </div>
     </div>
   </div>`;
@@ -1280,7 +1281,10 @@ function itemGasto(g){
     </div>
     <div style="text-align:right">
       <div class="p rojo">${eur(g.importe)}</div>
-      <button class="borrar" onclick="borrarGasto('${g.id}')">Borrar</button>
+      <div style="margin-top:6px;display:flex;gap:10px;justify-content:flex-end">
+        <button class="ic-btn lapiz" onclick="editarGasto('${g.id}')" aria-label="Editar gasto" title="Editar">✎</button>
+        <button class="ic-btn equis" onclick="borrarGasto('${g.id}')" aria-label="Borrar gasto" title="Borrar">✕</button>
+      </div>
     </div>
   </li>`;
 }
@@ -1294,7 +1298,7 @@ function vistaGastos(){
   </button>
 
   <section class="card ${formGastoAbierto?"":"oculto"}">
-    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">Nuevo gasto</div>
+    <div class="etq" style="font-size:15px;color:var(--oro);font-weight:600">${editandoGasto?"Editar gasto":"Nuevo gasto"}</div>
 
     <label>¿En qué te lo has gastado?</label>
     <input id="g-concepto" type="text" placeholder="Ej. garrafas, transporte, etiquetas…" value="${esc(nuevoGasto.concepto)}" oninput="setConceptoGasto(this.value)">
@@ -1315,7 +1319,7 @@ function vistaGastos(){
 
     <div id="zona-error-gasto">${nuevoGasto.error?`<div class="aviso">${nuevoGasto.error}</div>`:""}</div>
 
-    <button class="btn-oro" style="width:100%;margin-top:14px" onclick="registrarGasto()">Guardar gasto</button>
+    <button class="btn-oro" style="width:100%;margin-top:14px" onclick="registrarGasto()">${editandoGasto?"Guardar cambios":"Guardar gasto"}</button>
   </section>
 
   <h2>Registro · ${estado.gastos.length} gasto${estado.gastos.length===1?"":"s"}${estado.gastos.length?` · ${eur(total)}`:""}</h2>
@@ -1329,7 +1333,18 @@ function vistaGastos(){
 function setConceptoGasto(v){ nuevoGasto.concepto = v; if(nuevoGasto.error){ nuevoGasto.error=""; document.getElementById("zona-error-gasto").innerHTML = ""; } }
 function setImporteGasto(v){ nuevoGasto.importe = Math.max(0, Number(v)||0); }
 function setFechaGasto(v){ nuevoGasto.fecha = v; }
-function toggleFormGasto(){ formGastoAbierto = !formGastoAbierto; render(); }
+function toggleFormGasto(){
+  formGastoAbierto = !formGastoAbierto;
+  if(!formGastoAbierto || editandoGasto){ editandoGasto = null; if(!formGastoAbierto) nuevoGasto = { concepto:"", importe:0, fecha:new Date().toISOString().slice(0,10), error:"" }; }
+  render();
+}
+function editarGasto(id){
+  const g = estado.gastos.find(x=>x.id===id); if(!g) return;
+  nuevoGasto = { concepto:g.concepto, importe:g.importe, fecha:g.fecha, error:"" };
+  editandoGasto = id; formGastoAbierto = true;
+  render();
+  if(typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 function registrarGasto(){
   const elC = document.getElementById("g-concepto"); if(elC) nuevoGasto.concepto = elC.value;
@@ -1343,14 +1358,18 @@ function registrarGasto(){
     nuevoGasto.error = "Pon el importe del gasto.";
     return document.getElementById("zona-error-gasto").innerHTML = `<div class="aviso">${nuevoGasto.error}</div>`;
   }
-  estado.gastos.unshift({ id:String(Date.now()), concepto:nuevoGasto.concepto.trim(), importe:nuevoGasto.importe, fecha:nuevoGasto.fecha });
+  const gEd = editandoGasto ? estado.gastos.find(x=>x.id===editandoGasto) : null;
+  if(gEd){ gEd.concepto = nuevoGasto.concepto.trim(); gEd.importe = nuevoGasto.importe; gEd.fecha = nuevoGasto.fecha; }
+  else estado.gastos.unshift({ id:String(Date.now()), concepto:nuevoGasto.concepto.trim(), importe:nuevoGasto.importe, fecha:nuevoGasto.fecha });
   nuevoGasto = { concepto:"", importe:0, fecha:new Date().toISOString().slice(0,10), error:"" };
+  editandoGasto = null;
   formGastoAbierto = false;
   guardar(); render();
 }
 
 function borrarGasto(id){
-  pedirConfirmacion("¿Borrar este gasto?", () => {
+  const g = estado.gastos.find(x=>x.id===id);
+  pedirConfirmacion(`¿Seguro que quieres borrar el gasto ${g?"«"+g.concepto+"» ("+eur(g.importe)+")":""}? No se puede deshacer.`, () => {
     estado.gastos = estado.gastos.filter(g=>g.id!==id);
     guardar(); render();
   }, "Borrar");
@@ -1582,7 +1601,8 @@ function cambiarMetodo(id){
   guardar(); render();
 }
 function borrarPedido(id){
-  pedirConfirmacion("¿Borrar este pedido?", () => {
+  const p = estado.pedidos.find(x=>x.id===id);
+  pedirConfirmacion(`¿Seguro que quieres borrar el pedido de ${p?p.cliente:""}${p?" ("+eur(p.total)+")":""}? No se puede deshacer.`, () => {
     estado.pedidos = estado.pedidos.filter(p=>p.id!==id);
     guardar(); render();
   }, "Borrar");
@@ -1619,7 +1639,7 @@ document.addEventListener("click", e => { if(!e.target.closest(".menu-envoltorio
 
 function irA(t){
   if(t!=="pedidos"){ formAbierto = false; editandoPedido = null; }
-  if(t!=="gastos") formGastoAbierto = false;
+  if(t!=="gastos"){ formGastoAbierto = false; editandoGasto = null; }
   tab = t; render(); window.scrollTo(0,0);
 }
 function toggleForm(){
