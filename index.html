@@ -472,6 +472,22 @@
     .vistazo .mini .v{font-size:19px;margin-top:1px}
     .vistazo .mini .s{font-size:11px;margin-top:0}
   }
+  /* ---------- Más aire arriba, gráfico algo más bajo, recuadros centrados (móvil) ---------- */
+  @media (max-width:899px){
+    .app{padding-top:18px}
+    .cab{margin-bottom:18px;gap:12px}
+    .icono-img{width:56px;height:56px;border-radius:16px}
+    .btn-menu{min-height:56px}
+    h1{font-size:20px;line-height:1.1}
+    .cab p{font-size:12.5px;margin-top:4px}
+    .vistazo .kpi-principal{padding:24px 4px !important;margin-bottom:12px}
+    .vistazo .rejilla-2{gap:10px}
+    .vistazo .mini{padding:13px 12px;text-align:center}
+    .vistazo .mini .v{margin-top:3px}
+    .vistazo .mini .s{margin-top:2px}
+    .vistazo h2{margin:18px 0 10px}
+    .vistazo .card-anyos{min-height:130px}
+  }
   .sync-caja{margin:14px 0 4px;padding:14px;border:1px solid var(--borde);border-radius:16px;background:var(--panel-2)}
   .sync-tit{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
   .sync-caja a{color:var(--oro)}
@@ -1390,8 +1406,11 @@ let cobrandoPedido = null;
 function togglePagado(id){
   const p = estado.pedidos.find(x=>x.id===id); if(!p) return;
   if(p.pagado){
-    p.pagado = false;
-    guardar(); render();
+    pedirConfirmacion(`El pedido de ${p.cliente} (${eur(p.total)}) está pagado. ¿Quieres devolverlo a pendiente?`, () => {
+      const q = estado.pedidos.find(x=>x.id===id); if(!q) return;
+      q.pagado = false;
+      guardar(); render();
+    }, "Pasar a pendiente");
     return;
   }
   cobrandoPedido = id;
