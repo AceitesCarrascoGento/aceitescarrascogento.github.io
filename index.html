@@ -632,6 +632,36 @@
   .tarta{border:4px solid #DFCFAC !important;box-shadow:0 8px 22px rgba(84,66,20,.15) !important}
   .card,.item,.lista .mini{background:linear-gradient(165deg,#F9F2E2,#F2E7CD) !important;border-color:#DFCFAC !important}
   .vista-resumen section.card{background:#F5ECD7 !important}
+
+  /* KPIs de color: un único tono liso por color (verde = Cobrado, rojo = Pendiente de cobro) */
+  .vista-resumen .rejilla-2 .mini.t-verde{background:#ECEED5 !important;border-color:#D3D8A8 !important}
+  .vista-resumen .rejilla-2 .mini.t-rojo{background:#F8E5DA !important;border-color:#EBC5B0 !important}
+  .vista-resumen .rejilla-2 .mini.t-oro{background:#F8EAC0 !important;border-color:#E8D08A !important}
+  .vista-resumen .rejilla-2 .mini.t-azul{background:#E2EDF3 !important;border-color:#B9D3E2 !important}
+
+  /* Ventas por año: columnas más finas y estilizadas */
+  .graf{justify-content:center;gap:22px}
+  .graf .col{max-width:90px !important}
+  .graf .barra-caja{justify-content:center}
+  .graf .b{width:40px !important;border-radius:14px 14px 5px 5px !important}
+  @media (min-width:900px){ .graf{gap:34px} .graf .b{width:52px !important} }
+
+  /* Pedidos y gastos: nombre a la izquierda, cifra y botones */
+  .item.it3{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info cifra" "info acc";column-gap:12px;row-gap:6px;align-items:center}
+  .it3 .it-info{grid-area:info;min-width:0}
+  .it3 .it-cifra{grid-area:cifra;text-align:right;align-self:end}
+  .it3 .it-acc{grid-area:acc;display:flex;gap:10px;justify-content:flex-end;align-self:start}
+  @media (min-width:900px){
+    /* En ordenador la cifra va en el centro del recuadro */
+    .item.it3{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"info cifra acc";min-height:104px}
+    .it3 .it-cifra{text-align:center;align-self:center;font-size:21px}
+    .it3 .it-acc{align-self:center}
+    /* Gastos: mismos recuadros que pedidos, en dos columnas */
+    .vista-gastos .lista{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .vista-gastos .lista .item{margin-bottom:0}
+    /* Pestañas de pedidos: Pagados primero */
+    .vista-pedidos .subnav button:nth-child(2){order:-1}
+  }
 </style>
 </head>
 <body>
@@ -1207,8 +1237,8 @@ function itemPedido(p){
   if(p.garrafas>0) partes.push(`${p.garrafas} garrafa${p.garrafas===1?"":"s"}`);
   const detalle = partes.join(" + ") || "0 garrafas";
   return `
-  <div class="item">
-    <div style="min-width:0">
+  <div class="item it3">
+    <div class="it-info">
       <div class="n">${esc(p.cliente)}</div>
       <div class="cifra" style="font-size:20px;margin-top:2px">${detalle}</div>
       <div style="margin-top:6px">
@@ -1216,12 +1246,10 @@ function itemPedido(p){
         ${p.pagado?`<button class="chip ${(p.metodo||"efectivo")==="bizum"?"met-bizum":"met-efectivo"}" onclick="cambiarMetodo('${p.id}')">${(p.metodo||"efectivo")==="bizum"?"BIZUM":"EFECTIVO"}</button>`:""}
       </div>
     </div>
-    <div style="text-align:right">
-      <div class="p ${p.pagado?"oro":"rojo"}">${eur(p.total)}</div>
-      <div style="margin-top:4px;display:flex;gap:10px;justify-content:flex-end">
-        <button class="ic-btn lapiz" onclick="editarPedido('${p.id}')" aria-label="Editar pedido" title="Editar">✎</button>
-        <button class="ic-btn equis" onclick="borrarPedido('${p.id}')" aria-label="Borrar pedido" title="Borrar">✕</button>
-      </div>
+    <div class="p it-cifra ${p.pagado?"oro":"rojo"}">${eur(p.total)}</div>
+    <div class="it-acc">
+      <button class="ic-btn lapiz" onclick="editarPedido('${p.id}')" aria-label="Editar pedido" title="Editar">✎</button>
+      <button class="ic-btn equis" onclick="borrarPedido('${p.id}')" aria-label="Borrar pedido" title="Borrar">✕</button>
     </div>
   </div>`;
 }
@@ -1382,17 +1410,15 @@ function vistaClientes(){
 
 function itemGasto(g){
   return `
-  <li class="item">
-    <div style="min-width:0">
+  <li class="item it3">
+    <div class="it-info">
       <div class="n">${esc(g.concepto)}</div>
       <div class="d">${fechaCorta(g.fecha)}</div>
     </div>
-    <div style="text-align:right">
-      <div class="p rojo">${eur(g.importe)}</div>
-      <div style="margin-top:6px;display:flex;gap:10px;justify-content:flex-end">
-        <button class="ic-btn lapiz" onclick="editarGasto('${g.id}')" aria-label="Editar gasto" title="Editar">✎</button>
-        <button class="ic-btn equis" onclick="borrarGasto('${g.id}')" aria-label="Borrar gasto" title="Borrar">✕</button>
-      </div>
+    <div class="p it-cifra rojo">${eur(g.importe)}</div>
+    <div class="it-acc">
+      <button class="ic-btn lapiz" onclick="editarGasto('${g.id}')" aria-label="Editar gasto" title="Editar">✎</button>
+      <button class="ic-btn equis" onclick="borrarGasto('${g.id}')" aria-label="Borrar gasto" title="Borrar">✕</button>
     </div>
   </li>`;
 }
