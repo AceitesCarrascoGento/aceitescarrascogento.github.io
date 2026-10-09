@@ -662,6 +662,29 @@
     /* Pestañas de pedidos: Pagados primero */
     .vista-pedidos .subnav button:nth-child(2){order:-1}
   }
+
+  /* Pedidos: nombre / cajas arriba, estado / cifra abajo */
+  .item.itp{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nom cifra" "det cifra" "chips acc";row-gap:4px}
+  .itp .it-nom{grid-area:nom;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .itp .it-det{grid-area:det;font-size:20px}
+  .itp .it-chips{grid-area:chips;margin-top:2px}
+  .itp .it-cifra{align-self:center}
+  .itp .it-acc{align-self:center}
+  @media (min-width:900px){
+    .item.it3{min-height:84px;padding:10px 16px}
+    .item.itp{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"nom det acc" "chips cifra acc";row-gap:6px}
+    .itp .it-nom{align-self:end;font-size:16px}
+    .itp .it-det{align-self:end;text-align:center;font-size:17px;line-height:1.2}
+    .itp .it-chips{align-self:start;margin-top:0}
+    .itp .it-cifra{align-self:start;font-size:20px;line-height:1.2}
+  }
+
+  /* Clientes: todo en una línea (nombre, pedidos, al día / debe, total) */
+  .item.it-cli{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) auto auto;align-items:center;column-gap:12px}
+  .it-cli .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .it-cli .d{margin-top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .it-cli .chip{white-space:nowrap}
+  @media (max-width:899px){ .item.it-cli{column-gap:8px;padding:12px 12px} .it-cli .p{font-size:15px} .it-cli .d{font-size:11px} .it-cli .chip{font-size:10px;padding:3px 7px} }
 </style>
 </head>
 <body>
@@ -1237,15 +1260,13 @@ function itemPedido(p){
   if(p.garrafas>0) partes.push(`${p.garrafas} garrafa${p.garrafas===1?"":"s"}`);
   const detalle = partes.join(" + ") || "0 garrafas";
   return `
-  <div class="item it3">
-    <div class="it-info">
-      <div class="n">${esc(p.cliente)}</div>
-      <div class="cifra" style="font-size:20px;margin-top:2px">${detalle}</div>
-      <div style="margin-top:6px">
+  <div class="item it3 itp">
+      <div class="n it-nom">${esc(p.cliente)}</div>
+      <div class="cifra it-det">${detalle}</div>
+      <div class="it-chips">
         <button class="chip ${p.pagado?"pag":"pen"}" onclick="togglePagado('${p.id}')">${p.pagado?"PAGADO":"PENDIENTE"}</button>
         ${p.pagado?`<button class="chip ${(p.metodo||"efectivo")==="bizum"?"met-bizum":"met-efectivo"}" onclick="cambiarMetodo('${p.id}')">${(p.metodo||"efectivo")==="bizum"?"BIZUM":"EFECTIVO"}</button>`:""}
       </div>
-    </div>
     <div class="p it-cifra ${p.pagado?"oro":"rojo"}">${eur(p.total)}</div>
     <div class="it-acc">
       <button class="ic-btn lapiz" onclick="editarPedido('${p.id}')" aria-label="Editar pedido" title="Editar">✎</button>
@@ -1398,12 +1419,10 @@ function vistaClientes(){
   if(!filtrada.length) return buscador + `<div class="vacio">Ningún cliente llamado "${esc(buscarCliente)}".</div>`;
 
   return buscador + `<div class="lista">` + filtrada.map(c=>`
-    <div class="item">
-      <div>
-        <div class="n">${esc(c.cliente)}</div>
-        <div class="d">${c.garrafas} garrafas · ${c.n} pedido${c.n>1?"s":""}</div>
-        ${c.pendiente>0?`<span class="chip pen" style="margin-top:6px">DEBE ${eur(c.pendiente)}</span>`:`<span class="chip pag" style="margin-top:6px">AL DÍA</span>`}
-      </div>
+    <div class="item it-cli">
+      <div class="n">${esc(c.cliente)}</div>
+      <div class="d">${c.garrafas} garrafa${c.garrafas===1?"":"s"} · ${c.n} pedido${c.n>1?"s":""}</div>
+      <div>${c.pendiente>0?`<span class="chip pen">DEBE ${eur(c.pendiente)}</span>`:`<span class="chip pag">AL DÍA</span>`}</div>
       <div class="p oro">${eur(c.total)}</div>
     </div>`).join("") + `</div>`;
 }
