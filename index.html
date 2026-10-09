@@ -659,24 +659,32 @@
     /* Gastos: mismos recuadros que pedidos, en dos columnas */
     .vista-gastos .lista{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .vista-gastos .lista .item{margin-bottom:0}
-    /* Pestañas de pedidos: Pagados primero */
-    .vista-pedidos .subnav button:nth-child(2){order:-1}
   }
+  /* Pestañas de pedidos: Pagados primero (móvil y ordenador) */
+  .vista-pedidos .subnav button:nth-child(2){order:-1}
 
   /* Pedidos: nombre / cajas arriba, estado / cifra abajo */
-  .item.itp{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nom cifra" "det cifra" "chips acc";row-gap:4px}
-  .itp .it-nom{grid-area:nom;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .itp .it-det{grid-area:det;font-size:20px}
-  .itp .it-chips{grid-area:chips;margin-top:2px}
-  .itp .it-cifra{align-self:center}
+  /* Móvil: fila 1 nombre + estado, fila 2 cajas + cifra; botones a la derecha */
+  .item.itp{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"nom chips acc" "det cifra acc";row-gap:6px;column-gap:10px;padding:10px 12px}
+  .itp .it-nom{grid-area:nom;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:end}
+  .itp .it-det{grid-area:det;font-size:17px;line-height:1.2;align-self:start}
+  .itp .it-chips{grid-area:chips;align-self:end;text-align:right;white-space:nowrap}
+  .itp .it-cifra{align-self:start;text-align:right;font-size:18px;line-height:1.2}
   .itp .it-acc{align-self:center}
+  /* Gastos en móvil: concepto, cifra y botones en una fila */
+  @media (max-width:899px){
+    .vista-gastos .item.it3{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"info cifra acc";column-gap:14px}
+    .vista-gastos .it3 .it-cifra{align-self:center;font-size:18px}
+    .vista-gastos .it3 .it-acc{align-self:center}
+  }
   @media (min-width:900px){
     .item.it3{min-height:84px;padding:10px 16px}
     .item.itp{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"nom det acc" "chips cifra acc";row-gap:6px}
     .itp .it-nom{align-self:end;font-size:16px}
     .itp .it-det{align-self:end;text-align:center;font-size:17px;line-height:1.2}
-    .itp .it-chips{align-self:start;margin-top:0}
-    .itp .it-cifra{align-self:start;font-size:20px;line-height:1.2}
+    .item.itp{padding:10px 16px;column-gap:12px}
+    .itp .it-chips{align-self:start;margin-top:0;text-align:left}
+    .itp .it-cifra{align-self:start;font-size:20px;line-height:1.2;text-align:center}
   }
 
   /* Clientes: todo en una línea (nombre, pedidos, al día / debe, total) */
@@ -1267,7 +1275,7 @@ function itemPedido(p){
         <button class="chip ${p.pagado?"pag":"pen"}" onclick="togglePagado('${p.id}')">${p.pagado?"PAGADO":"PENDIENTE"}</button>
         ${p.pagado?`<button class="chip ${(p.metodo||"efectivo")==="bizum"?"met-bizum":"met-efectivo"}" onclick="cambiarMetodo('${p.id}')">${(p.metodo||"efectivo")==="bizum"?"BIZUM":"EFECTIVO"}</button>`:""}
       </div>
-    <div class="p it-cifra ${p.pagado?"oro":"rojo"}">${eur(p.total)}</div>
+    <div class="p it-cifra ${p.pagado?"verde":"rojo"}">${eur(p.total)}</div>
     <div class="it-acc">
       <button class="ic-btn lapiz" onclick="editarPedido('${p.id}')" aria-label="Editar pedido" title="Editar">✎</button>
       <button class="ic-btn equis" onclick="borrarPedido('${p.id}')" aria-label="Borrar pedido" title="Borrar">✕</button>
