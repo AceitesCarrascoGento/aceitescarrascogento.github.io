@@ -287,98 +287,6 @@
     .grid-inferior .graf .col{max-width:130px}
   }
 
-  /* ---------- Modo "de un vistazo" al entrar en pantalla completa (solo Resumen, solo ordenador) ----------
-     La app pasa a ocupar el 100% del alto de pantalla. El bloque de gráficos (Ventas por
-     año + Progreso) se reparte todo el espacio que sobra; "Últimos pedidos" se hace más
-     pequeño para dejar sitio. */
-  @media (min-width:900px){
-    :fullscreen .app, :-webkit-full-screen .app{
-      height:100vh;display:flex;flex-direction:column;overflow:hidden;
-      padding-top:10px;padding-bottom:10px;
-    }
-    :fullscreen .cab, :-webkit-full-screen .cab{margin-bottom:8px;flex:none}
-    :fullscreen .icono, :-webkit-full-screen .icono{width:32px;height:32px}
-    :fullscreen .icono svg, :-webkit-full-screen .icono svg{width:22px;height:22px}
-    :fullscreen h1, :-webkit-full-screen h1{font-size:17px}
-    :fullscreen .cab p, :-webkit-full-screen .cab p{font-size:10px}
-    :fullscreen .fila, :-webkit-full-screen .fila{top:10px;right:10px}
-
-    /* Barra de pestañas más grande */
-    :fullscreen nav, :-webkit-full-screen nav{margin-bottom:10px;padding:5px;flex:none}
-    :fullscreen nav button, :-webkit-full-screen nav button{padding:11px 16px;font-size:15px}
-
-    :fullscreen .vista-resumen, :-webkit-full-screen .vista-resumen{
-      flex:1;display:flex;flex-direction:column;min-height:0;
-    }
-
-    /* KPIs más grandes */
-    :fullscreen .vista-resumen .kpi-principal, :-webkit-full-screen .vista-resumen .kpi-principal{margin-bottom:8px;flex:none}
-    :fullscreen .vista-resumen .kpi-mitad, :-webkit-full-screen .vista-resumen .kpi-mitad{padding:14px 16px}
-    :fullscreen .vista-resumen .kpi-mitad .etq, :-webkit-full-screen .vista-resumen .kpi-mitad .etq{font-size:15px}
-    :fullscreen .vista-resumen .kpi-mitad .cifra, :-webkit-full-screen .vista-resumen .kpi-mitad .cifra{font-size:36px !important}
-    :fullscreen .vista-resumen .kpi-mitad .v, :-webkit-full-screen .vista-resumen .kpi-mitad .v{font-size:36px !important}
-
-    :fullscreen .vista-resumen .rejilla-2, :-webkit-full-screen .vista-resumen .rejilla-2{gap:8px;margin-bottom:8px;flex:none}
-    :fullscreen .vista-resumen .rejilla-2 .mini, :-webkit-full-screen .vista-resumen .rejilla-2 .mini{padding:12px 14px}
-    :fullscreen .vista-resumen .rejilla-2 .mini .etq, :-webkit-full-screen .vista-resumen .rejilla-2 .mini .etq{font-size:12px}
-    :fullscreen .vista-resumen .rejilla-2 .mini .v, :-webkit-full-screen .vista-resumen .rejilla-2 .mini .v{font-size:23px !important;margin-top:3px}
-    :fullscreen .vista-resumen .rejilla-2 .mini .s, :-webkit-full-screen .vista-resumen .rejilla-2 .mini .s{font-size:11px}
-
-    /* El bloque de gráficos ocupa todo el espacio restante */
-    :fullscreen .vista-resumen .grid-inferior, :-webkit-full-screen .vista-resumen .grid-inferior{
-      margin-top:0;gap:16px;flex:1;min-height:0;
-    }
-    :fullscreen .vista-resumen .grid-inferior > div:first-child, :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child{
-      display:flex;flex-direction:column;min-height:0;height:100%;
-    }
-    :fullscreen .vista-resumen h2, :-webkit-full-screen .vista-resumen h2{margin:0 0 6px;font-size:11px;flex:none}
-    :fullscreen .vista-resumen .grid-inferior > div:first-child > h2:not(:first-child), :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > h2:not(:first-child){margin-top:14px}
-
-    :fullscreen .vista-resumen .grid-inferior > div:first-child > section.card,
-    :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > section.card{
-      flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 16px;margin-bottom:0;
-    }
-    :fullscreen .vista-resumen .grid-inferior > div:first-child > section.card:first-of-type,
-    :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > section.card:first-of-type{flex:1.35}
-    :fullscreen .vista-resumen .grid-inferior > div:first-child > section.card:last-of-type,
-    :-webkit-full-screen .vista-resumen .grid-inferior > div:first-child > section.card:last-of-type{flex:0.65}
-
-    /* Ventas por año: las columnas se estiran a lo alto que quede, y quedan centradas (no en la esquina) */
-    :fullscreen .vista-resumen .graf, :-webkit-full-screen .vista-resumen .graf{
-      flex:1;min-height:0;height:auto;gap:10px;justify-content:center;margin-top:0;
-    }
-    :fullscreen .vista-resumen .graf .col, :-webkit-full-screen .vista-resumen .graf .col{max-width:52px}
-    :fullscreen .vista-resumen .valor-anyo, :-webkit-full-screen .vista-resumen .valor-anyo{font-size:16px;height:20px}
-
-    /* Progreso de ventas: centrado en el espacio que le toca */
-    :fullscreen .vista-resumen .progreso, :-webkit-full-screen .vista-resumen .progreso{
-      flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:0 4px;
-    }
-    :fullscreen .vista-resumen .progreso-num, :-webkit-full-screen .vista-resumen .progreso-num{font-size:30px}
-    :fullscreen .vista-resumen .progreso-num span, :-webkit-full-screen .vista-resumen .progreso-num span{margin-left:4px}
-    :fullscreen .vista-resumen .barra-pct, :-webkit-full-screen .vista-resumen .barra-pct{height:10px;margin-top:8px}
-    :fullscreen .vista-resumen .progreso .etq, :-webkit-full-screen .vista-resumen .progreso .etq{font-size:12px;margin-top:8px !important}
-
-    /* Últimos pedidos: cuadrados más pequeños */
-    :fullscreen .vista-resumen .lista .mini, :-webkit-full-screen .vista-resumen .lista .mini{
-      padding:8px 10px;margin-bottom:12px;
-      display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;
-    }
-    :fullscreen .vista-resumen .lista .mini > div:first-child, :-webkit-full-screen .vista-resumen .lista .mini > div:first-child{
-      order:1;flex:0 0 84px;text-align:left;font-size:15px !important;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    :fullscreen .vista-resumen .lista .mini .cifra, :-webkit-full-screen .vista-resumen .lista .mini .cifra{
-      order:2;flex:1;text-align:center;font-size:15px !important;margin-top:0 !important;
-    }
-    :fullscreen .vista-resumen .lista .mini .v, :-webkit-full-screen .vista-resumen .lista .mini .v{
-      order:3;flex:0 0 70px;text-align:right;font-size:19px !important;margin-top:0 !important;
-    }
-
-    :fullscreen .vista-resumen .dona-envoltorio, :-webkit-full-screen .vista-resumen .dona-envoltorio{gap:16px;padding:0}
-    :fullscreen .vista-resumen .tarta, :-webkit-full-screen .vista-resumen .tarta{width:120px;height:120px}
-    :fullscreen .vista-resumen .leyenda-item, :-webkit-full-screen .vista-resumen .leyenda-item{font-size:13px}
-  }
   .icono-img{width:56px;height:56px;border-radius:16px;box-shadow:0 0 26px rgba(248,218,100,.35);flex:none}
   .cab{position:relative;z-index:20}
   .cab-txt{min-width:0;flex:1}
@@ -577,17 +485,69 @@
   .app .kpi-principal .etq,.app .kpi-principal .etq span{color:rgba(255,248,231,.74) !important}
   .app .kpi-principal .kpi-benef{color:#F4D27A !important;text-shadow:0 2px 12px rgba(40,30,0,.25) !important}
   .app .kpi-principal .kpi-benef.neg{color:#F6B39B !important}
-  .app .kpi-principal .kpi-vend{color:var(--crema) !important}
+  .app .kpi-principal .kpi-vend{color:#F4D27A !important;text-shadow:0 2px 12px rgba(40,30,0,.25) !important}
+  .app .vista-resumen .kpi-mitad{background:transparent !important;border:0 !important;box-shadow:none !important}
   @media (min-width:900px){
-    .app .kpi-principal{background:transparent !important;border:0 !important;box-shadow:none !important}
-    .app .kpi-principal::after{display:none}
-    .app .vista-resumen .kpi-mitad{
-      background:linear-gradient(150deg,#788733 0%,#5E6B26 48%,#434E1A 100%) !important;
-      border:1px solid #3F4917 !important;box-shadow:0 12px 30px rgba(62,72,24,.25) !important;
-    }
-    .app .vista-resumen .kpi-mitad .etq,.app .vista-resumen .kpi-mitad .etq span{color:rgba(255,248,231,.74) !important}
-    .app .vista-resumen .kpi-mitad .kpi-benef{color:#F4D27A !important}
-    .app .vista-resumen .kpi-mitad .kpi-vend{color:var(--crema) !important}
+    .app .kpi-principal{padding:14px 10px;margin-bottom:16px;border-radius:22px}
+    .app .kpi-principal::after{width:230px;height:230px;right:-50px;bottom:-70px;opacity:.11}
+    .app .vista-resumen .kpi-mitad{padding:10px 16px}
+    .app .vista-resumen .kpi-mitad + .kpi-mitad{border-left:1px solid rgba(255,248,231,.16) !important;border-radius:0 !important}
+    .app .vista-resumen .kpi-mitad .cifra,.app .vista-resumen .kpi-mitad .v{font-size:46px !important}
+    .vista-resumen .rejilla-2 .mini{text-align:center}
+
+    /* Abajo: las dos columnas acaban a la misma altura (Progreso y Últimos pedidos) */
+    .grid-inferior{align-items:stretch}
+    .grid-inferior > div{display:flex;flex-direction:column;min-width:0}
+    .grid-inferior > div > section.card{margin-bottom:0}
+    .grid-inferior > div > h2:not(:first-child){margin-top:22px}
+    .grid-inferior > div:first-child > section.card:first-of-type{flex:1;display:flex;flex-direction:column}
+    .grid-inferior > div:first-child > section.card:first-of-type .graf{flex:1;height:auto;min-height:200px}
+    .grid-inferior > div:last-child > section.card{flex:1;display:flex;flex-direction:column;justify-content:center}
+    .grid-inferior .lista{flex:none}
+
+    /* Últimos pedidos en filas compactas (ordenador) */
+    .grid-inferior .lista .mini{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 16px;margin-bottom:8px;text-align:left !important}
+    .grid-inferior .lista .mini:last-child{margin-bottom:0}
+    .grid-inferior .lista .mini > div{margin-top:0 !important}
+    .grid-inferior .lista .mini > div:first-child{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .grid-inferior .lista .mini .cifra{flex:1;text-align:center;font-size:16px !important}
+    .grid-inferior .lista .mini .v{flex:0 0 auto;text-align:right;font-size:18px !important}
+    .grid-inferior .graf{justify-content:center}
+
+    /* Botón de pantalla completa */
+    .btn-pc{display:flex !important}
+  }
+  .btn-pc{display:none;margin-left:auto;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:14px;cursor:pointer;
+    background:var(--panel) !important;border:1px solid var(--borde) !important;color:var(--oliva-osc);font:600 14px/1 inherit;box-shadow:var(--sombra)}
+  .btn-pc svg{width:18px;height:18px}
+  .btn-pc:hover{border-color:#C9B98F !important}
+  .sin-pc .btn-pc{display:none !important}
+
+  /* ---------- Pantalla completa (ordenador): el Resumen entero de un vistazo ---------- */
+  @media (min-width:900px){
+    body.pc.en-resumen .app{height:100vh;max-width:1480px;display:flex;flex-direction:column;overflow:hidden;padding:16px 34px 18px}
+    body.pc.en-resumen .cab{margin-bottom:12px;flex:none}
+    body.pc.en-resumen .icono-img{width:46px;height:46px}
+    body.pc.en-resumen h1{font-size:24px}
+    body.pc.en-resumen .cab p{font-size:13px}
+    body.pc.en-resumen #vista{flex:1;min-height:0;display:flex;flex-direction:column}
+    body.pc.en-resumen .kpi-principal{flex:none;padding:8px 10px;margin-bottom:10px}
+    body.pc.en-resumen .vista-resumen .kpi-mitad{padding:6px 16px}
+    body.pc.en-resumen .vista-resumen .kpi-mitad .cifra,body.pc.en-resumen .vista-resumen .kpi-mitad .v{font-size:40px !important}
+    body.pc.en-resumen .rejilla-2{flex:none;gap:10px}
+    body.pc.en-resumen .rejilla-2 .mini{padding:9px 14px}
+    body.pc.en-resumen .rejilla-2 .mini .v{font-size:24px;margin-top:2px}
+    body.pc.en-resumen .grid-inferior{flex:1;min-height:0;margin-top:12px;gap:18px}
+    body.pc.en-resumen .grid-inferior > div{min-height:0}
+    body.pc.en-resumen .grid-inferior h2{margin:0 0 6px !important;font-size:11.5px}
+    body.pc.en-resumen .grid-inferior > div > h2:not(:first-child){margin-top:12px !important}
+    body.pc.en-resumen .grid-inferior section.card{min-height:0;padding:12px 18px}
+    body.pc.en-resumen .grid-inferior > div:first-child > section.card:first-of-type{flex:1.5}
+    body.pc.en-resumen .grid-inferior > div:first-child > section.card:last-of-type{flex:1;display:flex;flex-direction:column;justify-content:center}
+    body.pc.en-resumen .grid-inferior .graf{min-height:0 !important;margin-top:4px}
+    body.pc.en-resumen .progreso-num{font-size:34px}
+    body.pc.en-resumen .tarta{width:min(220px,calc(22vh - 40px));height:min(220px,calc(22vh - 40px))}
+    body.pc.en-resumen .dona-envoltorio{gap:20px;padding:0}
   }
 
   /* Títulos de sección con hoja de olivo */
@@ -656,10 +616,10 @@
   .splash-barra i{background:linear-gradient(90deg,#5E6B26,#D9AE2E) !important}
 
   /* Recuadros del Resumen teñidos según su cifra; gráficos en tono arena */
-  .vista-resumen .rejilla-2 .mini:nth-child(1),.vista-resumen .rejilla-2 .mini:nth-child(5){background:linear-gradient(160deg,#F1F2DE,#E6E9C8) !important;border-color:#D3D8A8 !important}
-  .vista-resumen .rejilla-2 .mini:nth-child(2),.vista-resumen .rejilla-2 .mini:nth-child(3){background:linear-gradient(160deg,#FBEDE4,#F5DDCF) !important;border-color:#EBC5B0 !important}
-  .vista-resumen .rejilla-2 .mini:nth-child(4){background:linear-gradient(160deg,#FBF1D2,#F5E3AE) !important;border-color:#E8D08A !important}
-  .vista-resumen .rejilla-2 .mini:nth-child(6){background:linear-gradient(160deg,#EAF2F6,#D9E8F0) !important;border-color:#B9D3E2 !important}
+  .vista-resumen .rejilla-2 .mini.t-verde{background:linear-gradient(160deg,#F1F2DE,#E6E9C8) !important;border-color:#D3D8A8 !important}
+  .vista-resumen .rejilla-2 .mini.t-rojo{background:linear-gradient(160deg,#FBEDE4,#F5DDCF) !important;border-color:#EBC5B0 !important}
+  .vista-resumen .rejilla-2 .mini.t-oro{background:linear-gradient(160deg,#FBF1D2,#F5E3AE) !important;border-color:#E8D08A !important}
+  .vista-resumen .rejilla-2 .mini.t-azul{background:linear-gradient(160deg,#EAF2F6,#D9E8F0) !important;border-color:#B9D3E2 !important}
   .tarta{border:4px solid #DFCFAC !important;box-shadow:0 8px 22px rgba(84,66,20,.15) !important}
   .card,.item,.lista .mini{background:linear-gradient(165deg,#F9F2E2,#F2E7CD) !important;border-color:#DFCFAC !important}
 </style>
@@ -685,6 +645,7 @@
       <h1>Aceites <span style="white-space:nowrap">Carrasco-Gento</span></h1>
       <p>Inventario, pedidos y ganancias</p>
     </div>
+    <button id="btn-pc" class="btn-pc" onclick="alternarPantallaCompleta()" title="Pantalla completa"></button>
   </header>
 
     <main id="vista"></main>
@@ -1094,6 +1055,21 @@ function calc(){
 
 /* ---------- Vistas ---------- */
 
+function kpisResumen(s, movil){
+  const k = {
+    cobrado: `<div class="mini t-verde"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>`,
+    pend:    `<div class="mini t-rojo"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>`,
+    gastos:  `<div class="mini t-rojo"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>`,
+    cajas:   `<div class="mini t-oro"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""}</div></div>`,
+    efe:     `<div class="mini t-verde"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>`,
+    biz:     `<div class="mini t-azul"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>`
+  };
+  // Móvil (2 columnas): Cobrado | Pendiente · Efectivo | Gastos · Bizum | Cajas
+  // Ordenador (3 columnas): Cobrado | Efectivo | Bizum · Pendiente | Gastos | Cajas
+  const orden = movil ? ["cobrado","pend","efe","gastos","biz","cajas"] : ["cobrado","efe","biz","pend","gastos","cajas"];
+  return `<div class="rejilla-2">${orden.map(x => k[x]).join("")}</div>`;
+}
+
 function vistaResumen(){
   const s = calc();
   const movil = window.innerWidth < 900;
@@ -1113,14 +1089,7 @@ function vistaResumen(){
     </section>
   </div>
 
-  <div class="rejilla-2">
-    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>
-    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>
-    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>
-    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""}</div></div>
-    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>
-    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>
-  </div>
+  ${kpisResumen(s, movil)}
 
   ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
 
@@ -1149,14 +1118,7 @@ function vistaResumen(){
     </section>
   </div>
 
-  <div class="rejilla-2">
-    <div class="mini"><div class="etq">Cobrado</div><div class="v verde">${eur(s.cobrado)}</div></div>
-    <div class="mini"><div class="etq">Pendiente de cobro</div><div class="v rojo">${eur(s.pendiente)}</div></div>
-    <div class="mini"><div class="etq">Gastos</div><div class="v rojo">${eur(s.gastos)}</div></div>
-    <div class="mini"><div class="etq">Cajas en el almacén</div><div class="v oro">${s.cajasRest}${s.sueltasRest?` +${s.sueltasRest}`:""}</div></div>
-    <div class="mini"><div class="etq">En efectivo</div><div class="v verde">${eur(s.efectivo)}</div></div>
-    <div class="mini"><div class="etq">Por Bizum</div><div class="v" style="color:var(--cian)">${eur(s.bizum)}</div></div>
-  </div>
+  ${kpisResumen(s, movil)}
 
   ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
 
@@ -1179,7 +1141,7 @@ function vistaResumen(){
       <h2>Últimos pedidos</h2>
       <div class="lista">
       ${estado.pedidos.length===0 ? `<div class="vacio">Todavía no hay pedidos. Apunta el primero en la pestaña Pedidos.</div>`
-        : estado.pedidos.slice(0, elementoPantallaCompleta() ? 4 : 3).map(itemPedidoResumen).join("")}
+        : estado.pedidos.slice(0, document.body.classList.contains("pc") ? 4 : 3).map(itemPedidoResumen).join("")}
       </div>
     </div>
   </div>
@@ -1909,6 +1871,7 @@ function render(){
 
   const v = document.getElementById("vista");
   v.className = "vista-" + tab;
+  document.body.classList.toggle("en-resumen", tab === "resumen");
   v.innerHTML = tab==="resumen" ? vistaResumen()
     : tab==="pedidos" ? vistaPedidos()
     : tab==="clientes" ? vistaClientes()
@@ -1936,7 +1899,30 @@ window.addEventListener("resize", () => {
   if(w !== anchoPrevio){ anchoPrevio = w; ajustarVistazo(); }
 });
 
-function elementoPantallaCompleta(){ return null; }
+function elementoPantallaCompleta(){ return document.fullscreenElement || document.webkitFullscreenElement || null; }
+function alternarPantallaCompleta(){
+  const d = document, e = d.documentElement;
+  if(elementoPantallaCompleta()){ (d.exitFullscreen || d.webkitExitFullscreen).call(d); return; }
+  const f = e.requestFullscreen || e.webkitRequestFullscreen;
+  if(f){ const r = f.call(e); if(r && r.catch) r.catch(()=>{}); }
+}
+function pintarBotonPC(){
+  const b = document.getElementById("btn-pc"); if(!b) return;
+  const dentro = document.body.classList.contains("pc");
+  b.innerHTML = dentro
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>Salir`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa`;
+  b.title = dentro ? "Salir de pantalla completa" : "Pantalla completa";
+}
+function alCambiarPantallaCompleta(){
+  document.body.classList.toggle("pc", !!elementoPantallaCompleta());
+  pintarBotonPC();
+  render();
+}
+document.addEventListener("fullscreenchange", alCambiarPantallaCompleta);
+document.addEventListener("webkitfullscreenchange", alCambiarPantallaCompleta);
+if(!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)) document.body.classList.add("sin-pc");
+pintarBotonPC();
 
 document.addEventListener("keydown", e => { if(e.key === "Escape"){ cerrarMenu(); cancelarConfirmacion(); cerrarCobro(); cerrarDatos(); } });
 
