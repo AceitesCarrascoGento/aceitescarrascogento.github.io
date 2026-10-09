@@ -664,13 +664,21 @@
   .vista-pedidos .subnav button:nth-child(2){order:-1}
 
   /* Pedidos: nombre / cajas arriba, estado / cifra abajo */
-  /* Móvil: fila 1 nombre + estado, fila 2 cajas + cifra; botones a la derecha */
-  .item.itp{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"nom chips acc" "det cifra acc";row-gap:6px;column-gap:10px;padding:10px 12px}
+  /* Pedidos (móvil y ordenador): columna 1 nombre / estado, columna 2 cajas / cifra (centradas), columna 3 botones */
+  .item.itp{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"nom det acc" "chips cifra acc";row-gap:6px;column-gap:10px;padding:10px 12px}
   .itp .it-nom{grid-area:nom;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:end}
-  .itp .it-det{grid-area:det;font-size:17px;line-height:1.2;align-self:start}
-  .itp .it-chips{grid-area:chips;align-self:end;text-align:right;white-space:nowrap}
-  .itp .it-cifra{align-self:start;text-align:right;font-size:18px;line-height:1.2}
+  .itp .it-det{grid-area:det;align-self:end;text-align:center;font-size:16px;line-height:1.2}
+  .itp .it-chips{grid-area:chips;align-self:start;text-align:left;white-space:nowrap}
+  .itp .it-cifra{align-self:start;text-align:center;font-size:18px;line-height:1.2}
   .itp .it-acc{align-self:center}
+  .itp .it-chips{display:flex;gap:5px}
+  @media (max-width:899px){
+    .item.itp{column-gap:8px}
+    .itp .it-chips{gap:4px}
+    .itp .it-chips .chip{font-size:9.5px;padding:2px 6px;letter-spacing:0}
+    .itp .it-acc{gap:6px}
+    .itp .it-acc .ic-btn{width:32px;height:32px}
+  }
   /* Gastos en móvil: concepto, cifra y botones en una fila */
   @media (max-width:899px){
     .vista-gastos .item.it3{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"info cifra acc";column-gap:14px}
@@ -802,7 +810,7 @@ let formGastoAbierto = false;
 let editandoGasto = null;
 let editandoPedido = null;
 let buscarPedido = "";
-let subTabPedidos = "pendientes";
+let subTabPedidos = "pagados";
 let buscarCliente = "";
 let nuevoGasto = { concepto:"", importe:0, fecha:new Date().toISOString().slice(0,10), error:"" };
 
@@ -1801,6 +1809,7 @@ document.addEventListener("click", e => { if(!e.target.closest(".menu-envoltorio
 function irA(t){
   if(t!=="pedidos"){ formAbierto = false; editandoPedido = null; }
   if(t!=="gastos"){ formGastoAbierto = false; editandoGasto = null; }
+  if(t!==tab) subTabPedidos = "pagados";
   tab = t; render(); window.scrollTo(0,0);
 }
 function toggleForm(){
