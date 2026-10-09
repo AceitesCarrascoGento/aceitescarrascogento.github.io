@@ -1,5 +1,5 @@
 // Service worker: la app funciona sin conexión y se actualiza sola al haber versión nueva.
-const VERSION = "acg-v12";
+const VERSION = "acg-v13";
 const ARCHIVOS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./favicon-32.png"];
 
 self.addEventListener("install", e => {
