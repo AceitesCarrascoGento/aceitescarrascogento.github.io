@@ -479,8 +479,9 @@
     position:relative;overflow:hidden;
   }
   .app .kpi-principal::after{
-    content:"";position:absolute;right:-44px;bottom:-46px;width:160px;height:160px;pointer-events:none;
-    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M6 94 Q46 58 94 8' stroke='%23FFF8E7' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Cg fill='%23FFF8E7'%3E%3Cellipse cx='22' cy='66' rx='13' ry='4.2' transform='rotate(-20 22 66)'/%3E%3Cellipse cx='34' cy='82' rx='13' ry='4.2' transform='rotate(-72 34 82)'/%3E%3Cellipse cx='42' cy='46' rx='13' ry='4.2' transform='rotate(-18 42 46)'/%3E%3Cellipse cx='55' cy='62' rx='13' ry='4.2' transform='rotate(-70 55 62)'/%3E%3Cellipse cx='60' cy='28' rx='12' ry='4' transform='rotate(-20 60 28)'/%3E%3Cellipse cx='73' cy='42' rx='12' ry='4' transform='rotate(-70 73 42)'/%3E%3Cellipse cx='82' cy='14' rx='10' ry='3.6' transform='rotate(-30 82 14)'/%3E%3Ccircle cx='47' cy='70' r='5.5'/%3E%3Ccircle cx='66' cy='52' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain;opacity:.09;
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.09;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M6 94 Q46 58 94 8' stroke='%23FFF8E7' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Cg fill='%23FFF8E7'%3E%3Cellipse cx='22' cy='66' rx='13' ry='4.2' transform='rotate(-20 22 66)'/%3E%3Cellipse cx='34' cy='82' rx='13' ry='4.2' transform='rotate(-72 34 82)'/%3E%3Cellipse cx='42' cy='46' rx='13' ry='4.2' transform='rotate(-18 42 46)'/%3E%3Cellipse cx='55' cy='62' rx='13' ry='4.2' transform='rotate(-70 55 62)'/%3E%3Cellipse cx='60' cy='28' rx='12' ry='4' transform='rotate(-20 60 28)'/%3E%3Cellipse cx='73' cy='42' rx='12' ry='4' transform='rotate(-70 73 42)'/%3E%3Cellipse cx='82' cy='14' rx='10' ry='3.6' transform='rotate(-30 82 14)'/%3E%3Ccircle cx='47' cy='70' r='5.5'/%3E%3Ccircle cx='66' cy='52' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat right -44px bottom -46px/160px 160px,
+               url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='translate(100 0) scale(-1 1)'%3E%3Cpath d='M6 94 Q46 58 94 8' stroke='%23FFF8E7' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Cg fill='%23FFF8E7'%3E%3Cellipse cx='22' cy='66' rx='13' ry='4.2' transform='rotate(-20 22 66)'/%3E%3Cellipse cx='34' cy='82' rx='13' ry='4.2' transform='rotate(-72 34 82)'/%3E%3Cellipse cx='42' cy='46' rx='13' ry='4.2' transform='rotate(-18 42 46)'/%3E%3Cellipse cx='55' cy='62' rx='13' ry='4.2' transform='rotate(-70 55 62)'/%3E%3Cellipse cx='60' cy='28' rx='12' ry='4' transform='rotate(-20 60 28)'/%3E%3Cellipse cx='73' cy='42' rx='12' ry='4' transform='rotate(-70 73 42)'/%3E%3Cellipse cx='82' cy='14' rx='10' ry='3.6' transform='rotate(-30 82 14)'/%3E%3Ccircle cx='47' cy='70' r='5.5'/%3E%3Ccircle cx='66' cy='52' r='5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat left -44px bottom -46px/160px 160px;
   }
   .app .kpi-principal .etq,.app .kpi-principal .etq span{color:rgba(255,248,231,.74) !important}
   .app .kpi-principal .kpi-benef{color:#F4D27A !important;text-shadow:0 2px 12px rgba(40,30,0,.25) !important}
@@ -489,21 +490,22 @@
   .app .vista-resumen .kpi-mitad{background:transparent !important;border:0 !important;box-shadow:none !important}
   @media (min-width:900px){
     .app .kpi-principal{padding:14px 10px;margin-bottom:16px;border-radius:22px}
-    .app .kpi-principal::after{width:230px;height:230px;right:-50px;bottom:-70px;opacity:.11}
+    .app .kpi-principal::after{opacity:.11;background-size:230px 230px,230px 230px;background-position:right -50px bottom -70px,left -50px bottom -70px}
     .app .vista-resumen .kpi-mitad{padding:10px 16px}
     .app .vista-resumen .kpi-mitad + .kpi-mitad{border-left:1px solid rgba(255,248,231,.16) !important;border-radius:0 !important}
     .app .vista-resumen .kpi-mitad .cifra,.app .vista-resumen .kpi-mitad .v{font-size:46px !important}
     .vista-resumen .rejilla-2 .mini{text-align:center}
 
-    /* Abajo: las dos columnas acaban a la misma altura (Progreso y Últimos pedidos) */
-    .grid-inferior{align-items:stretch}
-    .grid-inferior > div{display:flex;flex-direction:column;min-width:0}
-    .grid-inferior > div > section.card{margin-bottom:0}
-    .grid-inferior > div > h2:not(:first-child){margin-top:22px}
-    .grid-inferior > div:first-child > section.card:first-of-type{flex:1;display:flex;flex-direction:column}
-    .grid-inferior > div:first-child > section.card:first-of-type .graf{flex:1;height:auto;min-height:200px}
-    .grid-inferior > div:last-child > section.card{flex:1;display:flex;flex-direction:column;justify-content:center}
-    .grid-inferior .lista{flex:none}
+    /* Abajo: rejilla de 2 columnas x (título, gráfico, título, gráfico): los títulos quedan a la misma altura */
+    .grid-inferior{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto 1fr auto auto;column-gap:20px;row-gap:0;align-items:stretch}
+    .grid-inferior > *{min-width:0}
+    .grid-inferior > h2{margin:0 0 10px !important}
+    .grid-inferior > h2.fila2{margin-top:22px !important}
+    .grid-inferior > section.card{margin:0 !important}
+    .grid-inferior > .gi-anyos{display:flex;flex-direction:column}
+    .grid-inferior > .gi-anyos .graf{flex:1;height:auto;min-height:200px}
+    .grid-inferior > .gi-tarta,.grid-inferior > .gi-prog{display:flex;flex-direction:column;justify-content:center}
+    .grid-inferior > .gi-prog{padding-top:12px;padding-bottom:12px}
 
     /* Últimos pedidos en filas compactas (ordenador) */
     .grid-inferior .lista .mini{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 16px;margin-bottom:8px;text-align:left !important}
@@ -531,23 +533,30 @@
     body.pc.en-resumen h1{font-size:24px}
     body.pc.en-resumen .cab p{font-size:13px}
     body.pc.en-resumen #vista{flex:1;min-height:0;display:flex;flex-direction:column}
-    body.pc.en-resumen .kpi-principal{flex:none;padding:8px 10px;margin-bottom:10px}
-    body.pc.en-resumen .vista-resumen .kpi-mitad{padding:6px 16px}
-    body.pc.en-resumen .vista-resumen .kpi-mitad .cifra,body.pc.en-resumen .vista-resumen .kpi-mitad .v{font-size:40px !important}
-    body.pc.en-resumen .rejilla-2{flex:none;gap:10px}
-    body.pc.en-resumen .rejilla-2 .mini{padding:9px 14px}
-    body.pc.en-resumen .rejilla-2 .mini .v{font-size:24px;margin-top:2px}
-    body.pc.en-resumen .grid-inferior{flex:1;min-height:0;margin-top:12px;gap:18px}
-    body.pc.en-resumen .grid-inferior > div{min-height:0}
-    body.pc.en-resumen .grid-inferior h2{margin:0 0 6px !important;font-size:11.5px}
-    body.pc.en-resumen .grid-inferior > div > h2:not(:first-child){margin-top:12px !important}
-    body.pc.en-resumen .grid-inferior section.card{min-height:0;padding:12px 18px}
-    body.pc.en-resumen .grid-inferior > div:first-child > section.card:first-of-type{flex:1.5}
-    body.pc.en-resumen .grid-inferior > div:first-child > section.card:last-of-type{flex:1;display:flex;flex-direction:column;justify-content:center}
+    body.pc.en-resumen .kpi-principal,body.pc.en-resumen .rejilla-2{flex:none}
+    body.pc.en-resumen .grid-inferior{flex:1;min-height:0;margin-top:16px}
+    body.pc.en-resumen .grid-inferior > h2{font-size:12px;margin-bottom:8px !important}
+    body.pc.en-resumen .grid-inferior > h2.fila2{margin-top:14px !important}
+    body.pc.en-resumen .grid-inferior > section.card{min-height:0}
+    body.pc.en-resumen .grid-inferior > .gi-anyos,body.pc.en-resumen .grid-inferior > .gi-tarta{padding:12px 18px}
     body.pc.en-resumen .grid-inferior .graf{min-height:0 !important;margin-top:4px}
-    body.pc.en-resumen .progreso-num{font-size:34px}
-    body.pc.en-resumen .tarta{width:min(220px,calc(22vh - 40px));height:min(220px,calc(22vh - 40px))}
-    body.pc.en-resumen .dona-envoltorio{gap:20px;padding:0}
+    body.pc.en-resumen .progreso-num{font-size:30px}
+    body.pc.en-resumen .gi-prog .barra-pct{margin-top:6px}
+    body.pc.en-resumen .gi-prog .etq{margin-top:6px !important}
+    body.pc.en-resumen .tarta{width:clamp(96px,calc(100vh - 700px),200px);height:clamp(96px,calc(100vh - 700px),200px)}
+  }
+  /* Pantallas bajas (≤820 px de alto): KPIs de arriba algo más compactos para que quepa todo */
+  @media (min-width:900px) and (max-height:820px){
+    body.pc.en-resumen .cab{margin-bottom:10px}
+    body.pc.en-resumen .kpi-principal{padding:8px 10px;margin-bottom:10px}
+    body.pc.en-resumen .vista-resumen .kpi-mitad{padding:4px 16px}
+    body.pc.en-resumen .vista-resumen .kpi-mitad .cifra,body.pc.en-resumen .vista-resumen .kpi-mitad .v{font-size:38px !important}
+    body.pc.en-resumen .rejilla-2{gap:10px}
+    body.pc.en-resumen .rejilla-2 .mini{padding:9px 14px}
+    body.pc.en-resumen .rejilla-2 .mini .v{font-size:23px}
+    body.pc.en-resumen .grid-inferior{margin-top:12px}
+    body.pc.en-resumen .tarta{width:clamp(90px,calc(100vh - 620px),200px);height:clamp(90px,calc(100vh - 620px),200px)}
+    body.pc.en-resumen .dona-envoltorio{gap:24px;padding:0}
   }
 
   /* Títulos de sección con hoja de olivo */
@@ -622,6 +631,7 @@
   .vista-resumen .rejilla-2 .mini.t-azul{background:linear-gradient(160deg,#EAF2F6,#D9E8F0) !important;border-color:#B9D3E2 !important}
   .tarta{border:4px solid #DFCFAC !important;box-shadow:0 8px 22px rgba(84,66,20,.15) !important}
   .card,.item,.lista .mini{background:linear-gradient(165deg,#F9F2E2,#F2E7CD) !important;border-color:#DFCFAC !important}
+  .vista-resumen section.card{background:#F5ECD7 !important}
 </style>
 </head>
 <body>
@@ -1078,7 +1088,7 @@ function vistaResumen(){
   <div class="vistazo">
   <div class="kpi-principal">
     <section class="card kpi-mitad" style="text-align:center">
-      <div class="etq" style="font-size:16px">Beneficios Totales</div>
+      <div class="etq" style="font-size:16px">Beneficios</div>
       <div class="v kpi-benef ${s.beneficios>=0?"":"neg"}" style="font-size:40px;font-weight:700;line-height:1.1">${eur(s.beneficios)}</div>
       <div class="etq" style="font-size:13px;margin-top:4px">${s.vend} <span style="color:var(--tenue)">garrafas vendidas</span></div>
     </section>
@@ -1107,7 +1117,7 @@ function vistaResumen(){
   ` : `
   <div class="kpi-principal">
     <section class="card kpi-mitad" style="text-align:center">
-      <div class="etq" style="font-size:16px">Beneficios Totales</div>
+      <div class="etq" style="font-size:16px">Beneficios</div>
       <div class="v kpi-benef ${s.beneficios>=0?"":"neg"}" style="font-size:40px;font-weight:700;line-height:1.1">${eur(s.beneficios)}</div>
       <div class="etq" style="font-size:13px;margin-top:4px">${s.vend} <span style="color:var(--tenue)">garrafas vendidas</span></div>
     </section>
@@ -1123,26 +1133,16 @@ function vistaResumen(){
   ${s.rest<0?`<div class="card" style="border-color:rgba(244,121,107,.5)"><div class="rojo" style="font-size:14px">Has vendido ${Math.abs(s.rest)} garrafas más de las dadas de alta. Añade stock en Ajustes.</div></div>`:""}
 
   <div class="grid-inferior">
-    <div>
-      <h2>Ventas por año</h2>
-      <section class="card">
-        ${graficoAnyos()}
-      </section>
-      <h2>Progreso de ventas</h2>
-      <section class="card">
-        ${barraProgreso(s)}
-      </section>
-    </div>
-    <div>
-      <h2>Cajas vendidas y restantes</h2>
-      <section class="card">
-        ${graficoStock(s)}
-      </section>
-      <h2>Últimos pedidos</h2>
-      <div class="lista">
-      ${estado.pedidos.length===0 ? `<div class="vacio">Todavía no hay pedidos. Apunta el primero en la pestaña Pedidos.</div>`
-        : estado.pedidos.slice(0, document.body.classList.contains("pc") ? 4 : 3).map(itemPedidoResumen).join("")}
-      </div>
+    <h2>Ventas por año</h2>
+    <h2>Cajas vendidas y restantes</h2>
+    <section class="card gi-anyos">${graficoAnyos()}</section>
+    <section class="card gi-tarta">${graficoStock(s)}</section>
+    <h2 class="fila2">Progreso de ventas</h2>
+    <h2 class="fila2">Últimos pedidos</h2>
+    <section class="card gi-prog">${barraProgreso(s)}</section>
+    <div class="lista">
+    ${estado.pedidos.length===0 ? `<div class="vacio">Todavía no hay pedidos. Apunta el primero en la pestaña Pedidos.</div>`
+      : estado.pedidos.slice(0, 3).map(itemPedidoResumen).join("")}
     </div>
   </div>
   `}
