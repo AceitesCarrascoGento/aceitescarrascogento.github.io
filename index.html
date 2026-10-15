@@ -559,6 +559,20 @@
     body.pc.en-resumen .dona-envoltorio{gap:24px;padding:0}
   }
 
+  /* El logo hace de botón del menú */
+  .btn-logo{position:relative;display:block;padding:0;margin:0;border:0;background:none;cursor:pointer;border-radius:16px;line-height:0;
+    transition:transform .15s ease;-webkit-tap-highlight-color:transparent}
+  .btn-logo:hover{transform:translateY(-1px)}
+  .btn-logo:active{transform:scale(.96)}
+  .btn-logo:focus-visible{outline:2px solid var(--oliva-2);outline-offset:3px}
+  .btn-logo .flecha-logo{position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+    background:var(--panel);border:1px solid var(--borde);color:var(--oliva-osc);box-shadow:0 2px 6px rgba(84,66,20,.18);transition:transform .2s}
+  .btn-logo .flecha-logo svg{width:12px;height:12px}
+  .btn-logo[aria-expanded="true"] .flecha-logo{transform:rotate(180deg)}
+  .btn-logo .punto{position:absolute;top:-3px;right:-3px}
+  .btn-logo .punto:not(.pend):not(.mal){display:none}
+  .cab{gap:14px}
+
   /* Títulos de sección con hoja de olivo */
   h2{color:#7A6C49 !important;display:flex;align-items:center;gap:8px}
   h2::before{content:"";width:16px;height:8px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 10'%3E%3Cellipse cx='10' cy='5' rx='9' ry='3.4' fill='%237D8B36' transform='rotate(-14 10 5)'/%3E%3Cpath d='M2 6.5 Q10 4.6 18 3.5' stroke='%23F4EDDC' stroke-width='.7' fill='none'/%3E%3C/svg%3E") no-repeat center/contain}
@@ -713,13 +727,13 @@
 <div class="app">
   <header class="cab">
     <div class="menu-envoltorio">
-      <button id="btn-menu" class="btn-menu" onclick="alternarMenu(event)" aria-label="Menú" aria-expanded="false">
-        <span class="hamburguesa" aria-hidden="true"><i></i><i></i><i></i></span>
+      <button id="btn-menu" class="btn-logo" onclick="alternarMenu(event)" aria-label="Menú" aria-expanded="false" title="Menú">
+        <img class="icono-img" src="icon.svg" alt="Aceites Carrasco-Gento" width="56" height="56">
+        <span class="flecha-logo" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span id="punto-guardado" class="punto"></span>
       </button>
       <div id="menu" class="menu oculto" role="menu"></div>
     </div>
-    <img class="icono-img" src="icon.svg" alt="Aceites Carrasco-Gento" width="56" height="56">
     <div class="cab-txt">
       <h1>Aceites <span style="white-space:nowrap">Carrasco-Gento</span></h1>
       <p>Inventario, pedidos y ganancias</p>
