@@ -521,13 +521,14 @@
   }
   .btn-pc{display:none;margin-left:auto;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:14px;cursor:pointer;
     background:var(--panel) !important;border:1px solid var(--borde) !important;color:var(--oliva-osc);font:600 14px/1 inherit;box-shadow:var(--sombra)}
-  .btn-pc svg{width:18px;height:18px}
+  .btn-pc svg{width:20px;height:20px}
+  .btn-pc{width:44px;padding:0 !important;justify-content:center}
   .btn-pc:hover{border-color:#C9B98F !important}
   .sin-pc .btn-pc{display:none !important}
 
   /* ---------- Pantalla completa (ordenador): el Resumen entero de un vistazo ---------- */
   @media (min-width:900px){
-    body.pc.en-resumen .app{height:100vh;max-width:1480px;display:flex;flex-direction:column;overflow:hidden;padding:16px 34px 18px}
+    body.pc.en-resumen .app{height:100vh;display:flex;flex-direction:column;overflow:hidden;padding:16px 34px 18px}
     body.pc.en-resumen .cab{margin-bottom:12px;flex:none}
     body.pc.en-resumen .icono-img{width:46px;height:46px}
     body.pc.en-resumen h1{font-size:24px}
@@ -1988,9 +1989,10 @@ function pintarBotonPC(){
   const b = document.getElementById("btn-pc"); if(!b) return;
   const dentro = document.body.classList.contains("pc");
   b.innerHTML = dentro
-    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>Salir`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa`;
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>`;
   b.title = dentro ? "Salir de pantalla completa" : "Pantalla completa";
+  b.setAttribute("aria-label", b.title);
 }
 function alCambiarPantallaCompleta(){
   document.body.classList.toggle("pc", !!elementoPantallaCompleta());
